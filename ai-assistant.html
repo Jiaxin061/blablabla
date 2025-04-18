@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DblaFence - AI Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+            color: #f5f5f7;
+            line-height: 1.5;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .assistant-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        .assistant-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .assistant-title {
+            font-size: 32px;
+            font-weight: 600;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-circle {
+            width: 36px;
+            height: 36px;
+            background: rgba(146, 146, 146, 0.95);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 7px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .sheep-icon {
+            width: 32px;
+            height: 32px;
+            filter: invert(100%);
+        }
+
+        .back-button {
+            background: #2c2c2e;
+            color: #f5f5f7;
+            padding: 8px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        .back-button:hover {
+            background: #3a3a3c;
+        }
+
+        .chat-panel {
+            background: #1d1d1f;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            margin-bottom: 24px;
+        }
+
+        .chat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .chat-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .voice-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #2c2c2e;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .voice-toggle:hover {
+            background: #3a3a3c;
+        }
+
+        .voice-icon {
+            font-size: 16px;
+        }
+
+        .chat-history {
+            height: 400px;
+            overflow-y: auto;
+            margin-bottom: 24px;
+            padding-right: 16px;
+        }
+
+        .message {
+            margin-bottom: 16px;
+            padding: 14px 18px;
+            border-radius: 12px;
+            max-width: 80%;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .user-message {
+            background-color: #2f2f31;
+            margin-left: auto;
+            border-radius: 18px 4px 18px 18px;
+        }
+
+        .assistant-message {
+            background-color: #1e1e20;
+            margin-right: auto;
+            border-radius: 4px 18px 18px 18px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .assistant-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 10px;
+            filter: invert(80%);
+        }
+
+        .assistant-message-content {
+            flex: 1;
+        }
+
+        .suggestions-container {
+            display: none;
+            margin-bottom: 20px;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .suggestion-category {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #8e8e93;
+        }
+
+        .suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .suggestion-chip {
+            background-color: #2c2c2e;
+            color: #f5f5f7;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.2s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .suggestion-chip:hover {
+            background-color: #3a3a3c;
+            transform: translateY(-2px);
+        }
+
+        .suggestion-item {
+            background: #2c2c2e;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .suggestion-badge {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .badge-critical {
+            background: rgba(255, 69, 58, 0.2);
+            color: #ff453a;
+        }
+
+        .badge-recommended {
+            background: rgba(255, 204, 0, 0.2);
+            color: #ffd60a;
+        }
+
+        .badge-optional {
+            background: rgba(48, 209, 88, 0.2);
+            color: #30d158;
+        }
+
+        .suggestion-text {
+            flex: 1;
+            font-size: 14px;
+        }
+
+        .suggestion-action {
+            background: #2d7aff;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+            border: none;
+            white-space: nowrap;
+        }
+
+        .suggestion-action:hover {
+            background: #2260d2;
+        }
+
+        .input-container {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .chat-input {
+            flex: 1;
+            background: #2c2c2e;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: #f5f5f7;
+            font-size: 14px;
+        }
+
+        .send-button {
+            background: #2d7aff;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 24px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .send-button:hover {
+            background: #2260d2;
+        }
+
+        /* Scrollbar Styles */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1d1d1f;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #2c2c2e;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3a3a3c;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: rgba(29, 29, 31, 0.8);
+            backdrop-filter: blur(20px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1);
+            padding: 16px 0;
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo img {
+            height: 48px;
+            width: auto;
+            margin-right: 16px;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+
+        nav ul li {
+            margin-left: 24px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #f5f5f7;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+
+        nav ul li a:hover {
+            color: #2d7aff;
+        }
+
+        .logout-btn {
+            background: rgba(255, 69, 58, 0.1);
+            color: #dfdfdf;
+            padding: 4px 16px 7px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            border: 1px solid rgba(255, 69, 58, 0.2);
+            margin-left: 24px;
+            cursor: pointer;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 69, 58, 0.2);
+            color: #ff453a;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <img src="images/DblaFence_logo.png" alt="DblaFence Logo">
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="company-dashboard.html">Dashboard</a></li>
+                    <li><a href="company-reports.html">Reports</a></li>
+                    <li><a href="company-settings.html">Settings</a></li>
+                    <li><a href="company-support.html">Support</a></li>
+                    <li><a href="#" class="logout-btn" onclick="handleLogout()">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="assistant-container">
+        <div class="assistant-header">
+            <a href="company-dashboard.html" class="back-button">← Back to Dashboard</a>
+        </div>
+
+        <div class="chat-panel">
+            <div class="chat-header">
+                <h1 class="assistant-title">
+                    <img src="images/sheep-svgrepo-com.svg" alt="Sheep" class="sheep-icon">
+                    BlackSheep
+                </h1>
+                <div class="voice-toggle">
+                    <span class="voice-icon">🎤</span>
+                    <span>Voice Input</span>
+                </div>
+            </div>
+
+            <div class="chat-history">
+                <div class="message assistant-message">
+                    <img src="images/sheep-svgrepo-com.svg" alt="BlackSheep" class="assistant-icon">
+                    <div class="assistant-message-content">
+                        Hi, I'm BlackSheep, your system health assistant. I can help you identify and resolve IT issues.
+                    </div>
+                </div>
+                <div class="message assistant-message">
+                    <img src="images/sheep-svgrepo-com.svg" alt="BlackSheep" class="assistant-icon">
+                    <div class="assistant-message-content">
+                        I've detected some system issues: CPU usage is at 78%, 3 updates are pending, and network latency is higher than normal at 120ms. What would you like help with first?
+                    </div>
+                </div>
+            </div>
+
+            <div id="suggestions-container" class="suggestions-container">
+                <!-- Suggestions will be dynamically inserted here -->
+            </div>
+
+            <div class="input-container">
+                <input type="text" class="chat-input" placeholder="Type your message...">
+                <button class="send-button">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add click handlers for suggestion actions
+        document.querySelectorAll('.suggestion-action').forEach(button => {
+            button.addEventListener('click', function() {
+                const action = this.textContent;
+                const suggestionText = this.previousElementSibling.textContent;
+                const message = document.createElement('div');
+                message.className = 'message user';
+                message.innerHTML = `
+                    <div class="assistant-message-content">
+                        Executing: ${action} - ${suggestionText}
+                    </div>
+                `;
+                document.querySelector('.chat-history').appendChild(message);
+                
+                // Simulate AI response
+                setTimeout(() => {
+                    const aiMessage = document.createElement('div');
+                    aiMessage.className = 'message ai';
+                    aiMessage.innerHTML = `
+                        <div class="assistant-message-content">
+                            I'm working on that for you. The action has been initiated and I'll keep you updated on the progress.
+                        </div>
+                    `;
+                    document.querySelector('.chat-history').appendChild(aiMessage);
+                    document.querySelector('.chat-history').scrollTop = document.querySelector('.chat-history').scrollHeight;
+                }, 500);
+            });
+        });
+
+        // Handle send button and input
+        const chatInput = document.querySelector('.chat-input');
+        const sendButton = document.querySelector('.send-button');
+
+        function sendMessage() {
+            const userInput = document.querySelector('.chat-input').value.trim();
+            if (userInput === '') return;
+            
+            // Clear input field
+            document.querySelector('.chat-input').value = '';
+            
+            // Add user message to chat
+            const chatContainer = document.querySelector('.chat-history');
+            const userMessage = document.createElement('div');
+            userMessage.className = 'message user-message';
+            userMessage.textContent = userInput;
+            chatContainer.appendChild(userMessage);
+            
+            // Scroll to bottom
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            
+            // Simulate AI response
+            setTimeout(() => {
+                let response = "";
+                const suggestionsContainer = document.getElementById('suggestions-container');
+                
+                // Generate contextual response based on user input
+                if (userInput.toLowerCase().includes('performance')) {
+                    response = "I've analyzed your system performance. Your CPU usage is currently at 78% which is above normal thresholds. Would you like me to suggest optimization steps?";
+                    
+                    // Show performance-related suggestions
+                    suggestionsContainer.innerHTML = `
+                        <div class="suggestion-category">Performance Optimization</div>
+                        <div class="suggestions">
+                            <div class="suggestion-chip">Close background applications</div>
+                            <div class="suggestion-chip">Run system diagnostics</div>
+                            <div class="suggestion-chip">Check startup programs</div>
+                        </div>
+                    `;
+                } else if (userInput.toLowerCase().includes('security')) {
+                    response = "I've checked your security status. Your system firewall is active, but you have 2 applications with pending security updates. Would you like to update them now?";
+                    
+                    // Show security-related suggestions
+                    suggestionsContainer.innerHTML = `
+                        <div class="suggestion-category">Security Actions</div>
+                        <div class="suggestions">
+                            <div class="suggestion-chip">Update applications</div>
+                            <div class="suggestion-chip">Run security scan</div>
+                            <div class="suggestion-chip">Check firewall settings</div>
+                        </div>
+                    `;
+                } else if (userInput.toLowerCase().includes('network')) {
+                    response = "I've detected some network issues. Your current latency is 120ms which is higher than usual. Would you like me to troubleshoot your connection?";
+                    
+                    // Show network-related suggestions
+                    suggestionsContainer.innerHTML = `
+                        <div class="suggestion-category">Network Troubleshooting</div>
+                        <div class="suggestions">
+                            <div class="suggestion-chip">Test internet speed</div>
+                            <div class="suggestion-chip">Restart router</div>
+                            <div class="suggestion-chip">Check for outages</div>
+                        </div>
+                    `;
+                } else {
+                    response = "I'm here to help with your system health. Would you like me to check your performance, security, or network status?";
+                    
+                    // Show default suggestions
+                    suggestionsContainer.innerHTML = `
+                        <div class="suggestion-category">Quick Actions</div>
+                        <div class="suggestions">
+                            <div class="suggestion-chip">Check system performance</div>
+                            <div class="suggestion-chip">Scan for security issues</div>
+                            <div class="suggestion-chip">Test network connection</div>
+                        </div>
+                    `;
+                }
+                
+                // Add AI response to chat
+                const aiMessage = document.createElement('div');
+                aiMessage.className = 'message assistant-message';
+                aiMessage.innerHTML = `
+                    <img src="images/sheep-svgrepo-com.svg" class="assistant-icon">
+                    <div class="assistant-message-content">${response}</div>
+                `;
+                chatContainer.appendChild(aiMessage);
+                
+                // Show suggestions
+                suggestionsContainer.style.display = 'block';
+                
+                // Scroll to bottom again
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }, 1000);
+        }
+
+        sendButton.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // Logout functionality
+        function handleLogout() {
+            // Clear any stored user data
+            localStorage.clear();
+            sessionStorage.clear();
+            // Redirect to login page
+            window.location.href = 'index.html';
+        }
+
+        // Initialize chat with a greeting
+        document.addEventListener('DOMContentLoaded', () => {
+            const chatContainer = document.querySelector('.chat-history');
+            const greeting = document.createElement('div');
+            greeting.className = 'message assistant-message';
+            greeting.innerHTML = `
+                <img src="images/sheep-svgrepo-com.svg" class="assistant-icon">
+                <div class="assistant-message-content">Hi, I'm BlackSheep, your system health assistant. I can help you identify and resolve IT issues.</div>
+            `;
+            chatContainer.appendChild(greeting);
+            
+            const initialUpdate = document.createElement('div');
+            initialUpdate.className = 'message assistant-message';
+            initialUpdate.innerHTML = `
+                <img src="images/sheep-svgrepo-com.svg" class="assistant-icon">
+                <div class="assistant-message-content">I've detected some system issues: CPU usage is at 78%, 3 updates are pending, and network latency is higher than normal at 120ms. What would you like help with first?</div>
+            `;
+            chatContainer.appendChild(initialUpdate);
+            
+            // Set up initial suggestions
+            const suggestionsContainer = document.getElementById('suggestions-container');
+            suggestionsContainer.innerHTML = `
+                <div class="suggestion-category">Quick Actions</div>
+                <div class="suggestions">
+                    <div class="suggestion-chip">Check system performance</div>
+                    <div class="suggestion-chip">Scan for security issues</div>
+                    <div class="suggestion-chip">Test network connection</div>
+                </div>
+            `;
+            suggestionsContainer.style.display = 'block';
+            
+            // Add event listeners for suggestion chips
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('suggestion-chip')) {
+                    const suggestionText = e.target.textContent;
+                    document.querySelector('.chat-input').value = suggestionText;
+                    sendMessage();
+                }
+            });
+        });
+    </script>
+</body>
+</html> 

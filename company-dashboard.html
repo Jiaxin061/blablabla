@@ -1,0 +1,2032 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DblaFence - Enhanced IT Health Dashboard (Dark Mode)</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="ai-chat-widget.css">
+    <style>
+        /* Dashboard Specific Styles */
+        .system-overview {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .system-score {
+            flex: 1;
+            background: #1d1d1f;
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .system-score::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(to right, #2d7aff, #2260d2);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .system-score:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+        }
+        
+        .system-score:hover::before {
+            opacity: 1;
+        }
+
+        .score-ring {
+            position: relative;
+            width: 160px;
+            height: 160px;
+            margin: 0 auto 20px;
+        }
+
+        .score-circle {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(#2d7aff 0%, #2d7aff 85%, #333336 85%, #333336 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .score-circle::before {
+            content: "";
+            position: absolute;
+            width: 80%;
+            height: 80%;
+            background-color: #1d1d1f;
+            border-radius: 50%;
+        }
+
+        .score-value {
+            position: relative;
+            font-size: 36px;
+            font-weight: 700;
+            z-index: 1;
+            color: #f5f5f7;
+        }
+
+        .score-label {
+            font-size: 14px;
+            color: #86868b;
+            margin-top: 8px;
+        }
+
+        /* System Status */
+        .system-status {
+            flex: 2;
+            background: #1d1d1f;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .system-status::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(to right, #2d7aff, #2260d2);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .system-status:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+        }
+        
+        .system-status:hover::before {
+            opacity: 1;
+        }
+
+        .status-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .status-header h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #f5f5f7;
+        }
+
+        .last-scan {
+            font-size: 14px;
+            color: #86868b;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .status-item {
+            padding: 20px;
+            border-radius: 12px;
+            background: #2c2c2e;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .status-item-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .status-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            font-size: 20px;
+        }
+
+        .status-icon.healthy {
+            background: rgba(48, 209, 88, 0.2);
+            color: #30d158;
+        }
+
+        .status-icon.warning {
+            background: rgba(255, 204, 0, 0.2);
+            color: #ffd60a;
+        }
+
+        .status-icon.critical {
+            background: rgba(255, 69, 58, 0.2);
+            color: #ff453a;
+        }
+
+        .status-title h4 {
+            font-size: 16px;
+            font-weight: 500;
+            color: #f5f5f7;
+        }
+
+        .status-title p {
+            font-size: 14px;
+            color: #86868b;
+        }
+
+        .status-details {
+            margin-top: 8px;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .detail-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .detail-label {
+            color: #86868b;
+        }
+
+        .detail-value {
+            color: #f5f5f7;
+            font-weight: 500;
+        }
+
+        .mini-chart {
+            height: 40px;
+            margin-top: 12px;
+            display: flex;
+            align-items: flex-end;
+        }
+
+        .chart-bar {
+            flex: 1;
+            background: rgba(45, 122, 255, 0.3);
+            margin-right: 2px;
+            border-radius: 2px 2px 0 0;
+        }
+
+        .chart-bar:last-child {
+            margin-right: 0;
+        }
+
+        /* Performance Mode Section */
+        .performance-mode-section {
+            margin-bottom: 40px;
+        }
+
+        .performance-container {
+            background: #1d1d1f;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .performance-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .performance-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #f5f5f7;
+        }
+
+        .current-mode {
+            background: rgba(48, 209, 88, 0.2);
+            color: #30d158;
+            font-size: 14px;
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+
+        .mode-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        .mode-card {
+            background: #2c2c2e;
+            border-radius: 12px;
+            padding: 20px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .mode-card.active {
+            border-color: #2d7aff;
+            background: rgba(45, 122, 255, 0.1);
+            cursor: default;
+            pointer-events: none;
+        }
+
+        .mode-card:not(.active):hover {
+            transform: translateY(-4px);
+        }
+
+        .mode-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            background: #3a3a3c;
+            font-size: 24px;
+        }
+
+        .mode-name {
+            font-size: 16px;
+            font-weight: 500;
+            color: #f5f5f7;
+            margin-bottom: 8px;
+        }
+
+        .mode-description {
+            font-size: 13px;
+            color: #86868b;
+            margin-bottom: 16px;
+        }
+
+        .mode-specs {
+            font-size: 12px;
+            color: #86868b;
+        }
+
+        .mode-spec {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+
+        .mode-action {
+            display: inline-block;
+            background: #2d7aff;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            text-decoration: none;
+            transition: all 0.2s;
+            margin-top: 12px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .mode-action:hover {
+            background: #2260d2;
+        }
+
+        .mode-action.current {
+            background: rgba(48, 209, 88, 0.2);
+            color: #30d158;
+            border: 2px solid rgba(48, 209, 88, 0.3);
+            box-shadow: 0 2px 8px rgba(48, 209, 88, 0.2);
+        }
+
+        /* Resources Section */
+        .resources-section {
+            margin-bottom: 40px;
+        }
+
+        .resources-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .resource-card {
+            background: #1d1d1f;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .resource-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(to right, #2d7aff, #2260d2);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .resource-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+        }
+        
+        .resource-card:hover::before {
+            opacity: 1;
+        }
+
+        .resource-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            align-items: center;
+        }
+
+        .resource-title {
+            font-size: 18px;
+            font-weight: 500;
+            color: #f5f5f7;
+        }
+
+        .resource-value {
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #f5f5f7;
+        }
+
+        .resource-subtitle {
+            font-size: 14px;
+            color: #86868b;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #2c2c2e;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 16px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+        }
+
+        .progress-fill.low {
+            background: #30d158;
+            width: 25%;
+        }
+
+        .progress-fill.medium {
+            background: #ffd60a;
+            width: 65%;
+        }
+
+        .progress-fill.high {
+            background: #ff453a;
+            width: 85%;
+        }
+
+        /* Issues and Updates Section */
+        .issues-updates-section {
+            margin-bottom: 40px;
+        }
+
+        .issues-updates-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+        }
+
+        .issues-updates-card {
+            background: #1d1d1f;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .issues-updates-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(to right, #2d7aff, #2260d2);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .issues-updates-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+        }
+        
+        .issues-updates-card:hover::before {
+            opacity: 1;
+        }
+
+        .issues-updates-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .issues-updates-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #f5f5f7;
+        }
+
+        .issues-updates-badge {
+            background: #2c2c2e;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            color: #86868b;
+        }
+
+        /* Issues Section */
+        .issues-section {
+            margin-bottom: 40px;
+        }
+
+        .issues-container {
+            background: #1d1d1f;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .issue-item {
+            display: flex;
+            padding: 16px 0;
+            border-bottom: 1px solid #2c2c2e;
+        }
+
+        .issue-item:last-child {
+            border-bottom: none;
+        }
+
+        .issue-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            font-size: 20px;
+        }
+
+        .issue-details {
+            flex: 1;
+        }
+
+        .issue-title {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 4px;
+            color: #f5f5f7;
+        }
+
+        .issue-description {
+            font-size: 14px;
+            color: #86868b;
+            margin-bottom: 8px;
+        }
+
+        .issue-action {
+            display: inline-block;
+            background: rgba(45, 122, 255, 0.1);
+            color: #2d7aff;
+            padding: 6px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 14px;
+            margin-top: 8px;
+            border: 1px solid rgba(45, 122, 255, 0.2);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .issue-action:hover {
+            background: rgba(45, 122, 255, 0.2);
+        }
+        
+        .issue-action-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .action-status {
+            font-size: 14px;
+            color: #86868b;
+        }
+        
+        .optimization-details {
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(48, 209, 88, 0.1);
+            border-radius: 8px;
+            font-size: 14px;
+            color: #d1d1d6;
+        }
+        
+        .optimization-details p {
+            margin: 5px 0;
+        }
+        
+        .progress-indicator {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #2d7aff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .update-timestamp {
+            font-size: 13px;
+            color: #86868b;
+            margin-top: 8px;
+        }
+        
+        .issue-action.completed {
+            background: rgba(48, 209, 88, 0.2);
+            color: #30d158;
+            border: 1px solid rgba(48, 209, 88, 0.3);
+            pointer-events: none;
+        }
+
+        /* Updates Section */
+        .updates-section {
+            margin-bottom: 40px;
+        }
+
+        .update-card {
+            background: #1d1d1f;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            margin-bottom: 16px;
+        }
+
+        .update-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .update-title-section h3 {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 4px;
+            color: #f5f5f7;
+        }
+
+        .update-source {
+            font-size: 14px;
+            color: #86868b;
+        }
+
+        .update-badge {
+            background: #2c2c2e;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            color: #86868b;
+        }
+
+        .update-description {
+            font-size: 14px;
+            margin-bottom: 16px;
+            line-height: 1.6;
+            color: #a1a1a6;
+        }
+
+        .update-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .recommendation-banner {
+            margin-top: 16px;
+            padding: 16px;
+            background: rgba(48, 209, 88, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            border-left: 4px solid #30d158;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .recommendation-banner:hover {
+            transform: translateY(-2px);
+        }
+
+        .recommendation-banner.suitable {
+            background: rgba(48, 209, 88, 0.1);
+            border-left-color: #30d158;
+        }
+
+        .recommendation-banner.not-suitable {
+            background: rgba(255, 204, 0, 0.097);
+            border-left-color: #ffd60a;
+        }
+
+        .recommendation-icon {
+            min-width: 24px;
+            width: 24px;
+            height: 24px;
+            background: rgba(48, 209, 88, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #30d158;
+            flex-shrink: 0;
+        }
+
+        .recommendation-icon.warning {
+            background: rgba(255, 204, 0, 0.2);
+            color: #ffd60a;
+        }
+
+        .recommendation-text {
+            font-size: 14px;
+            color: #f5f5f7;
+            line-height: 1.4;
+            flex: 1;
+        }
+
+        .recommendation-text strong {
+            font-weight: 600;
+        }
+
+        .hardware-specs-box {
+            margin-top: 16px;
+            padding: 16px;
+            background: #1d1d1f;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .hardware-specs {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .spec-item {
+            display: flex;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+
+        .spec-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .spec-label {
+            color: #30d158;
+            font-weight: 500;
+            min-width: 70px;
+        }
+
+        .spec-value {
+            color: #a1a1a6;
+        }
+
+        /* Chatbot Styles */
+        .chatbot-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 1000;
+        }
+
+        .chatbot-button {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #2d7aff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(45, 122, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .chatbot-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 16px rgba(45, 122, 255, 0.4);
+        }
+
+        .chatbot-icon {
+            color: white;
+            font-size: 24px;
+        }
+
+        .chatbot-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: #ff453a;
+            color: white;
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+
+        /* Restricted Link Style */
+        .restricted-link {
+            position: relative;
+            color: #f5f5f7;
+            opacity: 0.8;
+            transition: all 0.2s ease;
+        }
+
+        .restricted-link:hover {
+            opacity: 1;
+        }
+
+        .lock-icon {
+            font-size: 10px;
+            margin-left: 4px;
+            opacity: 0.7;
+        }
+
+        /* Admin Access Modal */
+        .admin-key-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .admin-key-modal.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: #1d1d1f;
+            padding: 32px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+        }
+
+        .admin-key-modal.visible .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #f5f5f7;
+            margin-bottom: 16px;
+        }
+
+        .modal-description {
+            font-size: 14px;
+            color: #86868b;
+            margin-bottom: 24px;
+        }
+
+        .key-input {
+            width: 100%;
+            padding: 12px;
+            background: #2c2c2e;
+            border: 1px solid #3a3a3c;
+            border-radius: 8px;
+            color: #f5f5f7;
+            font-size: 16px;
+            margin-bottom: 24px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .modal-button {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .cancel-button {
+            background: #2c2c2e;
+            color: #f5f5f7;
+        }
+
+        .cancel-button:hover {
+            background: #3a3a3c;
+        }
+
+        .confirm-button {
+            background: #2d7aff;
+            color: white;
+        }
+
+        .confirm-button:hover {
+            background: #2260d2;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1100px) {
+            .mode-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .system-overview {
+                flex-direction: column;
+            }
+
+            .resources-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .status-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .mode-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        nav ul li a:hover {
+            color: #2d7aff;
+        }
+
+        /* Active navigation link style */
+        nav ul li a.active {
+            color: #2d7aff;
+            font-weight: 600;
+            position: relative;
+        }
+
+        nav ul li a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #2d7aff;
+            border-radius: 1px;
+        }
+
+        .logout-btn {
+            background: rgba(255, 69, 58, 0.1);
+            color: #dfdfdf;
+            padding: 4px 16px 7px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            border: 1px solid rgba(255, 69, 58, 0.2);
+            margin-left: 24px;
+            cursor: pointer;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 69, 58, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <img src="images/DblaFence_logo.png" alt="PulseCheck Logo">
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="company-dashboard.html">Dashboard</a></li>
+                    <li><a href="company-reports.html">Reports</a></li>
+                    <li><a href="#" id="adminLink" class="restricted-link" onclick="checkAdminAccess(event)">Admin <span class="lock-icon">🔒</span></a></li>
+                    <li><a href="company-settings.html">Settings</a></li>
+                    <li><a href="company-support.html">Support</a></li>
+                    <li><a href="#" class="logout-btn" onclick="handleLogout()">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <h2 class="section-title">System Health Dashboard</h2>
+        
+        <!-- Dashboard Overview -->
+        <section class="system-overview">
+            <div class="system-score">
+                <div class="score-ring">
+                    <div class="score-circle">
+                        <div class="score-value">85</div>
+                    </div>
+                </div>
+                <h3>System Health Score</h3>
+                <p class="score-label">Your system is performing well</p>
+                
+                <div class="recommendation-banner">
+                    <div class="recommendation-icon">✓</div>
+                    <div class="recommendation-text">
+                        <span class="recommendation-message">Based on your usage, we recommend switching to <strong>Creative Pro</strong> mode</span>
+                    </div>
+                </div>
+                <div class="hardware-specs-box">
+                    <div class="hardware-specs">
+                        <div class="spec-item">
+                            <span class="spec-label">CPU:</span>
+                            <span class="spec-value">Intel Core i9-13900K @ 3.0GHz</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">GPU:</span>
+                            <span class="spec-value">NVIDIA RTX 4090 24GB</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">RAM:</span>
+                            <span class="spec-value">32GB DDR5 5600MHz</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">Storage:</span>
+                            <span class="spec-value">2TB NVMe SSD</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="system-status">
+                <div class="status-header">
+                    <h3>Status Summary</h3>
+                    <span class="last-scan">Last scan: Today, 10:45 AM</span>
+                </div>
+                
+                <div class="status-grid">
+                    <div class="status-item">
+                        <div class="status-item-header">
+                            <div class="status-icon healthy">✓</div>
+                            <div class="status-title">
+                                <h4>CPU Performance</h4>
+                                <p>Operating normally</p>
+                            </div>
+                        </div>
+                        <div class="mini-chart">
+                            <div class="chart-bar" style="height: 30%;"></div>
+                            <div class="chart-bar" style="height: 60%;"></div>
+                            <div class="chart-bar" style="height: 40%;"></div>
+                            <div class="chart-bar" style="height: 25%;"></div>
+                            <div class="chart-bar" style="height: 45%;"></div>
+                            <div class="chart-bar" style="height: 35%;"></div>
+                            <div class="chart-bar" style="height: 20%;"></div>
+                            <div class="chart-bar" style="height: 30%;"></div>
+                        </div>
+                        <div class="status-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Current Usage</span>
+                                <span class="detail-value">25%</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Temperature</span>
+                                <span class="detail-value">56°C (Normal)</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Clock Speed</span>
+                                <span class="detail-value">3.2 GHz</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Process Count</span>
+                                <span class="detail-value">142 processes</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="status-item">
+                        <div class="status-item-header">
+                            <div class="status-icon warning">!</div>
+                            <div class="status-title">
+                                <h4>Memory Usage</h4>
+                                <p>High utilization detected</p>
+                            </div>
+                        </div>
+                        <div class="mini-chart">
+                            <div class="chart-bar" style="height: 50%;"></div>
+                            <div class="chart-bar" style="height: 55%;"></div>
+                            <div class="chart-bar" style="height: 60%;"></div>
+                            <div class="chart-bar" style="height: 65%;"></div>
+                            <div class="chart-bar" style="height: 62%;"></div>
+                            <div class="chart-bar" style="height: 68%;"></div>
+                            <div class="chart-bar" style="height: 65%;"></div>
+                            <div class="chart-bar" style="height: 70%;"></div>
+                        </div>
+                        <div class="status-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Used Memory</span>
+                                <span class="detail-value">12.5 GB of 16 GB</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Cached</span>
+                                <span class="detail-value">3.8 GB</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Top Process</span>
+                                <span class="detail-value">Chrome (2.4 GB)</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Recommendation</span>
+                                <span class="detail-value">Close unused apps</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="status-item">
+                        <div class="status-item-header">
+                            <div class="status-icon healthy">✓</div>
+                            <div class="status-title">
+                                <h4>Storage Health</h4>
+                                <p>SSD performance optimal</p>
+                            </div>
+                        </div>
+                        <div class="mini-chart">
+                            <div class="chart-bar" style="height: 45%;"></div>
+                            <div class="chart-bar" style="height: 45%;"></div>
+                            <div class="chart-bar" style="height: 45%;"></div>
+                            <div class="chart-bar" style="height: 45%;"></div>
+                            <div class="chart-bar" style="height: 45%;"></div>
+                            <div class="chart-bar" style="height: 45%;"></div>
+                            <div class="chart-bar" style="height: 45%;"></div>
+                            <div class="chart-bar" style="height: 45%;"></div>
+                        </div>
+                        <div class="status-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Used Space</span>
+                                <span class="detail-value">227 GB of 512 GB</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Read Speed</span>
+                                <span class="detail-value">2,840 MB/s</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Write Speed</span>
+                                <span class="detail-value">1,950 MB/s</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Health Status</span>
+                                <span class="detail-value">98% (Excellent)</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="status-item">
+                        <div class="status-item-header">
+                            <div class="status-icon healthy">✓</div>
+                            <div class="status-title">
+                                <h4>Network Connectivity</h4>
+                                <p>Strong connection</p>
+                            </div>
+                        </div>
+                        <div class="mini-chart">
+                            <div class="chart-bar" style="height: 80%;"></div>
+                            <div class="chart-bar" style="height: 85%;"></div>
+                            <div class="chart-bar" style="height: 90%;"></div>
+                            <div class="chart-bar" style="height: 95%;"></div>
+                            <div class="chart-bar" style="height: 92%;"></div>
+                            <div class="chart-bar" style="height: 95%;"></div>
+                            <div class="chart-bar" style="height: 90%;"></div>
+                            <div class="chart-bar" style="height: 95%;"></div>
+                        </div>
+                        <div class="status-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Current Speed</span>
+                                <span class="detail-value">95 Mbps down / 18 Mbps up</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Connection Type</span>
+                                <span class="detail-value">Wi-Fi 6 (802.11ax)</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Signal Strength</span>
+                                <span class="detail-value">Excellent (-56 dBm)</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Active Connections</span>
+                                <span class="detail-value">24 connections</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Performance Mode Section -->
+        <section class="performance-mode-section">
+            <h2 class="section-title">Performance Modes</h2>
+            
+            <div class="performance-container">
+                <div class="performance-header">
+                    <h3 class="performance-title">Select a Mode for Your Workflow</h3>
+                    <span class="current-mode">Current: Balanced</span>
+                </div>
+                
+                <div class="mode-grid">
+                    <div class="mode-card" data-mode="power-saver">
+                        <div class="mode-icon">🔋</div>
+                        <h4 class="mode-name">Power Saver</h4>
+                        <p class="mode-description">Maximizes battery life with minimal performance impact for everyday tasks.</p>
+                        <div class="mode-specs">
+                            <div class="mode-spec">
+                                <span>CPU Limit</span>
+                                <span>60%</span>
+                            </div>
+                            <div class="mode-spec">
+                                <span>Fan Speed</span>
+                                <span>Low</span>
+                            </div>
+                            <div class="mode-spec">
+                                <span>Performance</span>
+                                <span>⭐⭐</span>
+                            </div>
+                        </div>
+                        <button class="mode-action">Switch Mode</button>
+                    </div>
+                    
+                    <div class="mode-card active" data-mode="balanced">
+                        <div class="mode-icon">⚖️</div>
+                        <h4 class="mode-name">Balanced</h4>
+                        <p class="mode-description">Smart balance between performance and power consumption.</p>
+                        <div class="mode-specs">
+                            <div class="mode-spec">
+                                <span>CPU Limit</span>
+                                <span>80%</span>
+                            </div>
+                            <div class="mode-spec">
+                                <span>Fan Speed</span>
+                                <span>Dynamic</span>
+                            </div>
+                            <div class="mode-spec">
+                                <span>Performance</span>
+                                <span>⭐⭐⭐</span>
+                            </div>
+                        </div>
+                        <button class="mode-action">Current Mode</button>
+                    </div>
+                    
+                    <div class="mode-card" data-mode="gaming">
+                        <div class="mode-icon">🎮</div>
+                        <h4 class="mode-name">Gaming</h4>
+                        <p class="mode-description">Optimized for games with enhanced GPU and CPU performance.</p>
+                        <div class="mode-specs">
+                            <div class="mode-spec">
+                                <span>CPU Limit</span>
+                                <span>100%</span>
+                            </div>
+                            <div class="mode-spec">
+                                <span>Fan Speed</span>
+                                <span>High</span>
+                            </div>
+                            <div class="mode-spec">
+                                <span>Performance</span>
+                                <span>⭐⭐⭐⭐</span>
+                            </div>
+                        </div>
+                        <button class="mode-action">Switch Mode</button>
+                    </div>
+                    
+                    <div class="mode-card" data-mode="creative">
+                        <div class="mode-icon">🎨</div>
+                        <h4 class="mode-name">Creative Pro</h4>
+                        <p class="mode-description">Ideal for video editing, 3D rendering and creative workflows.</p>
+                        <div class="mode-specs">
+                            <div class="mode-spec">
+                                <span>CPU Limit</span>
+                                <span>100%</span>
+                            </div>
+                            <div class="mode-spec">
+                                <span>Fan Speed</span>
+                                <span>Dynamic High</span>
+                            </div>
+                            <div class="mode-spec">
+                                <span>Performance</span>
+                                <span>⭐⭐⭐⭐⭐</span>
+                            </div>
+                        </div>
+                        <button class="mode-action">Switch Mode</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Resource Usage -->
+        <section class="resources-section">
+            <h2 class="section-title">Resource Utilization</h2>
+            
+            <div class="resources-grid">
+                <div class="resource-card">
+                    <div class="resource-header">
+                        <span class="resource-title">CPU</span>
+                        <div class="status-icon healthy">✓</div>
+                    </div>
+                    <div class="resource-value">25%</div>
+                    <div class="resource-subtitle">Usage</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill low"></div>
+                    </div>
+                </div>
+                
+                <div class="resource-card">
+                    <div class="resource-header">
+                        <span class="resource-title">Memory</span>
+                        <div class="status-icon warning">!</div>
+                    </div>
+                    <div class="resource-value">65%</div>
+                    <div class="resource-subtitle">12.5 GB / 16 GB</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill medium"></div>
+                    </div>
+                </div>
+                
+                <div class="resource-card">
+                    <div class="resource-header">
+                        <span class="resource-title">Storage</span>
+                        <div class="status-icon healthy">✓</div>
+                    </div>
+                    <div class="resource-value">45%</div>
+                    <div class="resource-subtitle">285 GB free of 512 GB</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill low"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Issues and Updates Section -->
+        <section class="issues-updates-section">
+            <h2 class="section-title">System Status</h2>
+            
+            <div class="issues-updates-grid">
+                <div class="issues-updates-card">
+                    <div class="issues-updates-header">
+                        <h3 class="issues-updates-title">Detected Issues</h3>
+                        <span class="issues-updates-badge" id="issues-count">2 Active</span>
+                    </div>
+                    
+                    <div class="issue-item" id="memory-issue">
+                        <div class="issue-icon warning">!</div>
+                        <div class="issue-details">
+                            <h3 class="issue-title">High Memory Usage</h3>
+                            <p class="issue-description">Your system is experiencing high memory usage (65%), which might cause performance issues.</p>
+                            <div class="issue-action-container">
+                                <a class="issue-action" id="optimize-memory">Optimize Now</a>
+                                <div class="action-status" id="memory-status"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="issue-item" id="adobe-cc-issue">
+                        <div class="issue-icon warning">!</div>
+                        <div class="issue-details">
+                            <h3 class="issue-title">Adobe Creative Cloud Update Available</h3>
+                            <p class="issue-description">A new update is available for Adobe Creative Cloud (v22.5.1).</p>
+                            <div class="issue-action-container">
+                                <a class="issue-action" id="update-adobe">Update Now</a>
+                                <div class="action-status" id="adobe-status"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="issue-item" id="all-optimized" style="display: none;">
+                        <div class="issue-icon healthy">✓</div>
+                        <div class="issue-details">
+                            <h3 class="issue-title">All Issues Resolved</h3>
+                            <p class="issue-description">Your system has been optimized and all issues have been resolved.</p>
+                            <div class="optimization-details">
+                                <p>• Memory usage optimized</p>
+                                <p>• Applications updated</p>
+                                <p>• System performance improved</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="issues-updates-card">
+                    <div class="issues-updates-header">
+                        <h3 class="issues-updates-title">Available Updates</h3>
+                        <span class="issues-updates-badge" id="updates-count">3 Pending</span>
+                    </div>
+                    
+                    <div class="issue-item" id="macos-update">
+                        <div class="issue-icon warning">!</div>
+                        <div class="issue-details">
+                            <h3 class="issue-title">macOS Firmware Update</h3>
+                            <p class="issue-description">This update provides important security improvements and is recommended for all users. It includes fixes for system vulnerability patches, performance improvements, and battery optimization.</p>
+                            <div class="issue-action-container">
+                                <a class="issue-action" id="install-macos">Install Now</a>
+                                <div class="action-status" id="macos-status"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="issue-item" id="adobe-update">
+                        <div class="issue-icon warning">!</div>
+                        <div class="issue-details">
+                            <h3 class="issue-title">Adobe Creative Cloud</h3>
+                            <p class="issue-description">Version 22.5.1 includes new features for Photoshop and Illustrator, including new AI-powered tools, performance improvements, and bug fixes.</p>
+                            <div class="issue-action-container">
+                                <a class="issue-action" id="install-adobe">Install Now</a>
+                                <div class="action-status" id="adobe-update-status"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="issue-item" id="drivers-update">
+                        <div class="issue-icon warning">!</div>
+                        <div class="issue-details">
+                            <h3 class="issue-title">System Drivers Update</h3>
+                            <p class="issue-description">New drivers available for your hardware, including graphics driver update, network adapter optimization, and audio driver improvements.</p>
+                            <div class="issue-action-container">
+                                <a class="issue-action" id="install-drivers">Install Now</a>
+                                <div class="action-status" id="drivers-status"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="issue-item" id="all-updated" style="display: none;">
+                        <div class="issue-icon healthy">✓</div>
+                        <div class="issue-details">
+                            <h3 class="issue-title">All Updates Installed</h3>
+                            <p class="issue-description">Your system is up to date with all the latest updates and drivers.</p>
+                            <p class="update-timestamp">Last updated: <span id="update-time"></span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+   
+
+    <!-- Add the Admin Authentication Modal -->
+    <div class="admin-key-modal" id="adminKeyModal">
+        <div class="modal-content">
+            <h3 class="modal-title">Admin Access Required</h3>
+            <p class="modal-description">Please enter your admin key to access the admin dashboard. Only company administrators have access to this section.</p>
+            <input type="password" class="key-input" id="adminKeyInput" placeholder="Enter your admin key">
+            <div class="modal-buttons">
+                <button class="modal-button cancel-button" onclick="closeAdminModal()">Cancel</button>
+                <button class="modal-button confirm-button" onclick="verifyAdminKey()">Verify Key</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Directly highlight the Dashboard link on this page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Force highlight the Dashboard link
+            const dashboardLink = document.querySelector('nav ul li a[href="company-dashboard.html"]');
+            if (dashboardLink) {
+                dashboardLink.classList.add('active');
+                
+                // Also add a timeout to ensure the highlight persists
+                setTimeout(function() {
+                    dashboardLink.classList.add('active');
+                }, 100);
+            }
+            
+            // Initialize button event listeners for system status actions
+            initializeSystemStatusButtons();
+        });
+        
+        function handleLogout() {
+            localStorage.clear();
+            sessionStorage.clear();
+            
+            window.location.href = 'index.html';
+        }
+
+        // Performance Mode Selection
+        document.querySelectorAll('.mode-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const mode = this.dataset.mode;
+                const currentMode = document.querySelector('.mode-card.active');
+                const modeLabel = document.querySelector('.current-mode');
+                const recommendationBanner = document.querySelector('.recommendation-banner');
+                const recommendationMessage = document.querySelector('.recommendation-message');
+                const recommendationIcon = document.querySelector('.recommendation-icon');
+                
+                if (currentMode !== this) {
+                    // Remove active state from previous mode
+                    currentMode.classList.remove('active');
+                    const prevButton = currentMode.querySelector('.mode-action');
+                    prevButton.textContent = 'Switch Mode';
+                    prevButton.classList.remove('current');
+                    
+                    // Add active state to new mode
+                    this.classList.add('active');
+                    const newButton = this.querySelector('.mode-action');
+                    newButton.textContent = 'Current Mode';
+                    newButton.classList.add('current');
+                    
+                    modeLabel.textContent = `Current: ${this.querySelector('.mode-name').textContent}`;
+
+                    // Update recommendation message and styling based on selected mode
+                    if (mode === 'creative') {
+                        recommendationBanner.classList.remove('not-suitable');
+                        recommendationBanner.classList.add('suitable');
+                        recommendationIcon.classList.remove('warning');
+                        recommendationIcon.textContent = '✓';
+                        recommendationMessage.innerHTML = 'Current mode: <strong>Creative Pro</strong> is the most suitable for your usage';
+                    } else {
+                        recommendationBanner.classList.remove('suitable');
+                        recommendationBanner.classList.add('not-suitable');
+                        recommendationIcon.classList.add('warning');
+                        recommendationIcon.textContent = '!';
+                        recommendationMessage.innerHTML = 'Based on your usage, we recommend switching to <strong>Creative Pro</strong> mode';
+                    }
+                }
+            });
+        });
+
+        // Initialize current mode button styling and recommendation banner
+        document.querySelector('.mode-card.active .mode-action').classList.add('current');
+        const recommendationBanner = document.querySelector('.recommendation-banner');
+        const recommendationIcon = document.querySelector('.recommendation-icon');
+        if (document.querySelector('.mode-card.active').dataset.mode === 'creative') {
+            recommendationBanner.classList.add('suitable');
+        } else {
+            recommendationBanner.classList.add('not-suitable');
+            recommendationIcon.classList.add('warning');
+            recommendationIcon.textContent = '!';
+        }
+
+        // Make recommendation banner clickable to scroll to performance mode section
+        recommendationBanner.addEventListener('click', function() {
+            const performanceModeSection = document.querySelector('.performance-mode-section');
+            performanceModeSection.scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // Update Items Expansion
+        document.querySelectorAll('.update-item').forEach(item => {
+            item.addEventListener('click', function() {
+                this.classList.toggle('expanded');
+            });
+        });
+
+        let showingAll = false;
+        const updateItems = document.querySelectorAll('.update-item');
+        const showMoreBtn = document.querySelector('.show-more');
+
+        // Initially hide items beyond the second one
+        updateItems.forEach((item, index) => {
+            if (index > 1) item.style.display = 'none';
+        });
+
+        showMoreBtn.addEventListener('click', function() {
+            showingAll = !showingAll;
+            updateItems.forEach((item, index) => {
+                if (index > 1) {
+                    item.style.display = showingAll ? 'flex' : 'none';
+                }
+            });
+            this.textContent = showingAll ? 'Show Less' : 'Show More Updates';
+        });
+
+        // Check user account type and show/hide admin link
+        function checkAccountType() {
+            const accountType = localStorage.getItem('accountType');
+            const isAdmin = localStorage.getItem('isAdmin');
+            const adminNavItem = document.getElementById('adminLink');
+            
+            if (accountType === 'company' && isAdmin === 'true') {
+                adminNavItem.style.display = 'block';
+            } else {
+                adminNavItem.style.display = 'none';
+            }
+        }
+        
+        // Initialize account-specific features on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            checkAccountType();
+            highlightCurrentPage();
+            
+            // Explicitly set Dashboard link as active since we're on the dashboard page
+            const dashboardLink = document.querySelector('nav ul li a[href="company-dashboard.html"]');
+            if (dashboardLink) {
+                dashboardLink.classList.add('active');
+            }
+        });
+
+        // Highlight current page in navigation
+        function highlightCurrentPage() {
+            const currentPath = window.location.pathname;
+            const navLinks = document.querySelectorAll('nav ul li a:not(.logout-btn):not(.restricted-link)');
+            
+            let dashboardActive = false;
+            
+            navLinks.forEach(link => {
+                const linkPath = link.getAttribute('href');
+                // Check if we're on the dashboard page
+                if (currentPath.endsWith(linkPath) || 
+                    (linkPath === 'company-dashboard.html' && 
+                    (currentPath.endsWith('/') || currentPath.endsWith('/company-dashboard.html')))) {
+                    link.classList.add('active');
+                    if (linkPath === 'company-dashboard.html') {
+                        dashboardActive = true;
+                    }
+                }
+            });
+            
+            // Ensure dashboard link is active if we're on the dashboard page
+            if (!dashboardActive && (currentPath.endsWith('/') || 
+                                    currentPath.endsWith('/company-dashboard.html'))) {
+                const dashboardLink = document.querySelector('nav ul li a[href="company-dashboard.html"]');
+                if (dashboardLink) {
+                    dashboardLink.classList.add('active');
+                }
+            }
+            
+            // Special case for admin link if on admin page
+            if (currentPath.endsWith('company-admin.html')) {
+                const adminLink = document.getElementById('adminLink');
+                if (adminLink) {
+                    adminLink.classList.add('active');
+                }
+            }
+        }
+
+        // Admin access functions
+        function checkAdminAccess(event) {
+            event.preventDefault();
+            const isAdmin = localStorage.getItem('isAdmin');
+            
+            if (isAdmin === 'true') {
+                // User is already an admin, redirect to admin dashboard
+                window.location.href = 'company-admin.html';
+            } else {
+                // Show admin key verification modal
+                document.getElementById('adminKeyModal').classList.add('visible');
+                setTimeout(() => {
+                    document.getElementById('adminKeyInput').focus();
+                }, 300);
+            }
+        }
+
+        function verifyAdminKey() {
+            const keyInput = document.getElementById('adminKeyInput').value;
+            
+            // In a real app, this would verify the key with the server
+            // For demo purposes, we'll accept any non-empty key
+            if (keyInput.trim() !== '') {
+                localStorage.setItem('isAdmin', 'true');
+                closeAdminModal();
+                window.location.href = 'company-admin.html';
+            } else {
+                alert('Invalid admin key. Please try again.');
+            }
+        }
+
+        function closeAdminModal() {
+            document.getElementById('adminKeyModal').classList.remove('visible');
+            document.getElementById('adminKeyInput').value = '';
+        }
+
+        // Handle Enter key on admin key input
+        document.getElementById('adminKeyInput').addEventListener('keyup', function(event) {
+            if (event.key === 'Enter') {
+                verifyAdminKey();
+            }
+        });
+
+        // Close modal if clicking outside the content
+        document.getElementById('adminKeyModal').addEventListener('click', function(event) {
+            if (event.target === this) {
+                closeAdminModal();
+            }
+        });
+
+        // Initialize system status action buttons
+        function initializeSystemStatusButtons() {
+            // Memory optimization button
+            const optimizeMemoryBtn = document.getElementById('optimize-memory');
+            if (optimizeMemoryBtn) {
+                optimizeMemoryBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    handleMemoryOptimization();
+                });
+            }
+            
+            // Adobe CC update button (detected issues)
+            const updateAdobeBtn = document.getElementById('update-adobe');
+            if (updateAdobeBtn) {
+                updateAdobeBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    handleAdobeUpdate();
+                });
+            }
+            
+            // macOS update button
+            const installMacOSBtn = document.getElementById('install-macos');
+            if (installMacOSBtn) {
+                installMacOSBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    handleMacOSUpdate();
+                });
+            }
+            
+            // Adobe CC update button (available updates)
+            const installAdobeBtn = document.getElementById('install-adobe');
+            if (installAdobeBtn) {
+                installAdobeBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    handleAdobeInstall();
+                });
+            }
+            
+            // Drivers update button
+            const installDriversBtn = document.getElementById('install-drivers');
+            if (installDriversBtn) {
+                installDriversBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    handleDriversUpdate();
+                });
+            }
+            
+            // Log initialization for debugging
+            console.log('System status buttons initialized');
+        }
+        
+        // Handle memory optimization
+        function handleMemoryOptimization() {
+            const statusElement = document.getElementById('memory-status');
+            const memoryIssue = document.getElementById('memory-issue');
+            const button = document.getElementById('optimize-memory');
+            const issuesCount = document.getElementById('issues-count');
+            const memoryValue = document.querySelector('.resource-card:nth-child(2) .resource-value');
+            const memorySubtitle = document.querySelector('.resource-card:nth-child(2) .resource-subtitle');
+            const memoryProgressFill = document.querySelector('.resource-card:nth-child(2) .progress-fill');
+            const memoryIcon = document.querySelector('.resource-card:nth-child(2) .status-icon');
+            
+            // Disable button and show loading state
+            button.classList.add('disabled');
+            button.style.pointerEvents = 'none';
+            statusElement.innerHTML = '<span class="progress-indicator"></span> Optimizing...';
+            
+            // Simulate optimization process
+            setTimeout(function() {
+                // Update memory usage in resource card
+                memoryValue.textContent = '40%';
+                memorySubtitle.textContent = '6.4 GB / 16 GB';
+                memoryProgressFill.style.width = '40%';
+                memoryProgressFill.classList.remove('medium');
+                memoryProgressFill.classList.add('low');
+                memoryIcon.classList.remove('warning');
+                memoryIcon.classList.add('healthy');
+                memoryIcon.textContent = '✓';
+                
+                // Update system status section
+                statusElement.textContent = 'Completed!';
+                button.classList.add('completed');
+                button.textContent = 'Optimized';
+                
+                // Check if Adobe issue is resolved to update the counter
+                checkIssuesResolved();
+                
+                // Update status in system overview
+                const memoryStatus = document.querySelector('.status-item:nth-child(2) .status-icon');
+                const memoryTitle = document.querySelector('.status-item:nth-child(2) .status-title p');
+                if (memoryStatus && memoryTitle) {
+                    memoryStatus.classList.remove('warning');
+                    memoryStatus.classList.add('healthy');
+                    memoryStatus.textContent = '✓';
+                    memoryTitle.textContent = 'Operating normally';
+                }
+            }, 3000);
+        }
+        
+        // Handle Adobe update from issues section
+        function handleAdobeUpdate() {
+            const statusElement = document.getElementById('adobe-status');
+            const adobeIssue = document.getElementById('adobe-cc-issue');
+            const button = document.getElementById('update-adobe');
+            
+            // Also update the Adobe install button in updates section
+            const adobeInstallBtn = document.getElementById('install-adobe');
+            const adobeUpdateStatus = document.getElementById('adobe-update-status');
+            
+            // Disable button and show loading state
+            button.classList.add('disabled');
+            button.style.pointerEvents = 'none';
+            statusElement.innerHTML = '<span class="progress-indicator"></span> Updating...';
+            
+            // If the install button exists in updates section, update it too
+            if (adobeInstallBtn) {
+                adobeInstallBtn.classList.add('disabled');
+                adobeInstallBtn.style.pointerEvents = 'none';
+                adobeUpdateStatus.innerHTML = '<span class="progress-indicator"></span> Updating...';
+            }
+            
+            // Simulate update process
+            setTimeout(function() {
+                // Update issue status
+                statusElement.textContent = 'Completed!';
+                button.classList.add('completed');
+                button.textContent = 'Updated';
+                
+                // Update the install button if it exists
+                if (adobeInstallBtn) {
+                    adobeUpdateStatus.textContent = 'Completed!';
+                    adobeInstallBtn.classList.add('completed');
+                    adobeInstallBtn.textContent = 'Installed';
+                    
+                    // Hide the Adobe update item in updates section
+                    document.getElementById('adobe-update').style.display = 'none';
+                    
+                    // Check all updates
+                    checkAllUpdatesInstalled();
+                }
+                
+                // Check if memory issue is resolved to update the counter
+                checkIssuesResolved();
+            }, 4000);
+        }
+        
+        // Handle macOS update installation
+        function handleMacOSUpdate() {
+            const statusElement = document.getElementById('macos-status');
+            const button = document.getElementById('install-macos');
+            
+            // Disable button and show loading state
+            button.classList.add('disabled');
+            button.style.pointerEvents = 'none';
+            statusElement.innerHTML = '<span class="progress-indicator"></span> Installing (0%)';
+            
+            // Simulate installation process with progress updates
+            let progress = 0;
+            const interval = setInterval(function() {
+                progress += 10;
+                statusElement.innerHTML = `<span class="progress-indicator"></span> Installing (${progress}%)`;
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    statusElement.textContent = 'Completed!';
+                    button.classList.add('completed');
+                    button.textContent = 'Installed';
+                    
+                    // Hide the macOS update item
+                    setTimeout(function() {
+                        document.getElementById('macos-update').style.display = 'none';
+                        // Check if all updates are installed
+                        checkAllUpdatesInstalled();
+                    }, 1000);
+                }
+            }, 500);
+        }
+        
+        // Handle Adobe install from updates section
+        function handleAdobeInstall() {
+            const statusElement = document.getElementById('adobe-update-status');
+            const button = document.getElementById('install-adobe');
+            
+            // Also update the Adobe update button in issues section
+            const adobeUpdateBtn = document.getElementById('update-adobe');
+            const adobeStatus = document.getElementById('adobe-status');
+            
+            // Disable button and show loading state
+            button.classList.add('disabled');
+            button.style.pointerEvents = 'none';
+            statusElement.innerHTML = '<span class="progress-indicator"></span> Installing (0%)';
+            
+            // If the update button exists in issues section, update it too
+            if (adobeUpdateBtn) {
+                adobeUpdateBtn.classList.add('disabled');
+                adobeUpdateBtn.style.pointerEvents = 'none';
+                adobeStatus.innerHTML = '<span class="progress-indicator"></span> Updating...';
+            }
+            
+            // Simulate installation process with progress updates
+            let progress = 0;
+            const interval = setInterval(function() {
+                progress += 10;
+                statusElement.innerHTML = `<span class="progress-indicator"></span> Installing (${progress}%)`;
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    statusElement.textContent = 'Completed!';
+                    button.classList.add('completed');
+                    button.textContent = 'Installed';
+                    
+                    // Update the issue button if it exists
+                    if (adobeUpdateBtn) {
+                        adobeStatus.textContent = 'Completed!';
+                        adobeUpdateBtn.classList.add('completed');
+                        adobeUpdateBtn.textContent = 'Updated';
+                        
+                        // Check issues resolved
+                        checkIssuesResolved();
+                    }
+                    
+                    // Hide the Adobe update item
+                    setTimeout(function() {
+                        document.getElementById('adobe-update').style.display = 'none';
+                        // Check if all updates are installed
+                        checkAllUpdatesInstalled();
+                    }, 1000);
+                }
+            }, 600);
+        }
+        
+        // Handle Drivers update installation
+        function handleDriversUpdate() {
+            const statusElement = document.getElementById('drivers-status');
+            const button = document.getElementById('install-drivers');
+            
+            // Disable button and show loading state
+            button.classList.add('disabled');
+            button.style.pointerEvents = 'none';
+            statusElement.innerHTML = '<span class="progress-indicator"></span> Installing (0%)';
+            
+            // Simulate installation process with progress updates
+            let progress = 0;
+            const interval = setInterval(function() {
+                progress += 10;
+                statusElement.innerHTML = `<span class="progress-indicator"></span> Installing (${progress}%)`;
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    statusElement.textContent = 'Completed!';
+                    button.classList.add('completed');
+                    button.textContent = 'Installed';
+                    
+                    // Hide the drivers update item
+                    setTimeout(function() {
+                        document.getElementById('drivers-update').style.display = 'none';
+                        // Check if all updates are installed
+                        checkAllUpdatesInstalled();
+                    }, 1000);
+                }
+            }, 800); // Slightly slower to simulate different update speeds
+        }
+        
+        // Check if all issues are resolved
+        function checkIssuesResolved() {
+            const memoryButton = document.getElementById('optimize-memory');
+            const adobeButton = document.getElementById('update-adobe');
+            const issuesCount = document.getElementById('issues-count');
+            const memoryIssue = document.getElementById('memory-issue');
+            const adobeIssue = document.getElementById('adobe-cc-issue');
+            const allOptimized = document.getElementById('all-optimized');
+            
+            // If both issues are resolved
+            if (memoryButton.classList.contains('completed') && adobeButton.classList.contains('completed')) {
+                issuesCount.textContent = '0 Active';
+                
+                // Show the all optimized message after a short delay
+                setTimeout(function() {
+                    memoryIssue.style.display = 'none';
+                    adobeIssue.style.display = 'none';
+                    allOptimized.style.display = 'flex';
+                }, 1000);
+            } else if (memoryButton.classList.contains('completed') || adobeButton.classList.contains('completed')) {
+                // If only one issue is resolved
+                issuesCount.textContent = '1 Active';
+            }
+        }
+        
+        // Check if all updates are installed
+        function checkAllUpdatesInstalled() {
+            const macosUpdate = document.getElementById('macos-update');
+            const adobeUpdate = document.getElementById('adobe-update');
+            const driversUpdate = document.getElementById('drivers-update');
+            const updatesCount = document.getElementById('updates-count');
+            const allUpdated = document.getElementById('all-updated');
+            
+            // Check if all updates are hidden or completed
+            if ((macosUpdate.style.display === 'none' || !macosUpdate) && 
+                (adobeUpdate.style.display === 'none' || !adobeUpdate) && 
+                (driversUpdate.style.display === 'none' || !driversUpdate)) {
+                
+                updatesCount.textContent = '0 Pending';
+                
+                // Set current time for last updated
+                const now = new Date();
+                document.getElementById('update-time').textContent = now.toLocaleString();
+                
+                // Show the all updated message
+                allUpdated.style.display = 'flex';
+            } else {
+                // Count remaining visible updates
+                let count = 0;
+                if (macosUpdate.style.display !== 'none' && macosUpdate) count++;
+                if (adobeUpdate.style.display !== 'none' && adobeUpdate) count++;
+                if (driversUpdate.style.display !== 'none' && driversUpdate) count++;
+                
+                updatesCount.textContent = count + ' Pending';
+            }
+        }
+    </script>
+    <script src="ai-chat-widget.js"></script>
+</body>
+</html>
