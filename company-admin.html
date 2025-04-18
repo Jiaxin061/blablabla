@@ -322,60 +322,80 @@
         /* Admin access key modal */
         .admin-key-modal {
             position: fixed;
-            z-index: 1000;
-            left: 0;
             top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.7);
-            display: none;
-            opacity: 0;
-            transition: opacity 0.3s ease;
+            background: rgba(0, 0, 0, 0.8);
             display: flex;
             align-items: center;
             justify-content: center;
+            z-index: 1000;
         }
-        
-        .admin-key-modal .modal-content {
-            background-color: #1d1d1f;
-            padding: 24px;
+
+        .modal-content {
+            background: #1d1d1f;
+            padding: 32px;
             border-radius: 16px;
-            width: 80%;
-            max-width: 800px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-            margin: 0;
-            transform: translateY(0);
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
-        
-        .admin-key-modal .modal-title {
+
+        .modal-title {
             font-size: 20px;
             font-weight: 600;
             color: #f5f5f7;
-            margin-top: 0;
+            margin-bottom: 16px;
         }
-        
-        .action-button {
-            background: #3a3a3c;
-            color: #f5f5f7;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 8px;
-            cursor: pointer;
+
+        .modal-description {
             font-size: 14px;
+            color: #86868b;
+            margin-bottom: 24px;
+        }
+
+        .key-input {
+            width: 100%;
+            padding: 12px;
+            background: #2c2c2e;
+            border: 1px solid #3a3a3c;
+            border-radius: 8px;
+            color: #f5f5f7;
+            font-size: 16px;
+            margin-bottom: 24px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .modal-button {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
             transition: all 0.2s;
         }
-        
-        .action-button.primary {
+
+        .cancel-button {
+            background: #2c2c2e;
+            color: #f5f5f7;
+        }
+
+        .cancel-button:hover {
+            background: #3a3a3c;
+        }
+
+        .confirm-button {
             background: #2d7aff;
             color: white;
         }
-        
-        .action-button:hover {
-            transform: translateY(-2px);
-        }
-        
-        .action-button.primary:hover {
+
+        .confirm-button:hover {
             background: #2260d2;
         }
 
@@ -2154,7 +2174,7 @@
             </div>
 
             <!-- AI Suggestions Panel -->
-            <div class="ai-suggestions-panel card">
+            <div class="ai-suggestions-panel">
                 <div class="panel-header">
                     <h3 class="panel-title">AI Suggestions</h3>
                     <div class="panel-actions">
@@ -2213,7 +2233,7 @@
                 </div>
             </div>
         </div>
-                <div class="card" style="margin-top: 32px;">
+                <div class="card">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; ">
                         <div style="font-size: 18px; font-weight: 600; color: #f5f5f7;">Vendor Sync & Updates</div>
             </div>
@@ -2246,7 +2266,7 @@
                                     <td style="padding: 16px;">Security</td>
                                     <td style="padding: 16px;">
                                         <div style="display: flex; gap: 8px;">
-                                            <button onclick="deployUpdate('Windows OS', '10.0.19045', 18, 'Security')" style="background: #2d7aff; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;">Deploy</button>
+                                            <button style="background: #2d7aff; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;">Deploy</button>
                                             <button style="background: #3a3a3c; color: #f5f5f7; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;">Details</button>
                             </div>
                         </td>
@@ -2265,7 +2285,7 @@
                                     <td style="padding: 16px;">Feature</td>
                                     <td style="padding: 16px;">
                                         <div style="display: flex; gap: 8px;">
-                                            <button onclick="deployUpdate('Microsoft Office', '16.0.15128', 32, 'Feature')" style="background: #2d7aff; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;">Deploy</button>
+                                            <button style="background: #2d7aff; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;">Deploy</button>
                                             <button style="background: #3a3a3c; color: #f5f5f7; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;">Details</button>
                             </div>
                         </td>
@@ -2284,7 +2304,7 @@
                                     <td style="padding: 16px;">Stability</td>
                                     <td style="padding: 16px;">
                                         <div style="display: flex; gap: 8px;">
-                                            <button onclick="deployUpdate('Adobe Creative Cloud', '5.7.0.102', 9, 'Stability')" style="background: #2d7aff; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;">Deploy</button>
+                                            <button style="background: #2d7aff; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;">Deploy</button>
                                             <button style="background: #3a3a3c; color: #f5f5f7; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;">Details</button>
                             </div>
                         </td>
@@ -2303,7 +2323,7 @@
                                     <td style="padding: 16px;">Security</td>
                                     <td style="padding: 16px;">
                                         <div style="display: flex; gap: 8px;">
-                                            <button onclick="deployUpdate('Chrome Browser', '113.0.5672.93', 42, 'Security')" style="background: #2d7aff; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;">Deploy</button>
+                                            <button style="background: #2d7aff; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;">Deploy</button>
                                             <button style="background: #3a3a3c; color: #f5f5f7; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;">Details</button>
                             </div>
                         </td>
@@ -2322,7 +2342,7 @@
                                     <td style="padding: 16px;">Feature</td>
                                     <td style="padding: 16px;">
                                         <div style="display: flex; gap: 8px;">
-                                            <button onclick="deployUpdate('Zoom Meetings', '5.14.0', 38, 'Feature')" style="background: #2d7aff; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;">Deploy</button>
+                                            <button style="background: #2d7aff; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;">Deploy</button>
                                             <button style="background: #3a3a3c; color: #f5f5f7; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;">Details</button>
                             </div>
                         </td>
@@ -4807,103 +4827,6 @@
                 });
             }
         });
-
-        // Function to handle deployment of updates
-        function deployUpdate(software, version, devices, type) {
-            // Set modal content
-            document.getElementById('deploySoftware').textContent = software;
-            document.getElementById('deployVersion').textContent = version;
-            document.getElementById('deployDevices').textContent = devices;
-            document.getElementById('deployType').textContent = type;
-            
-            // Reset modal state
-            document.getElementById('deployUpdateContent').style.display = 'block';
-            document.getElementById('deployProgressContainer').style.display = 'none';
-            document.getElementById('deploySuccessContainer').style.display = 'none';
-            document.getElementById('deployCancel').textContent = 'Cancel';
-            document.getElementById('deployConfirm').style.display = 'inline-block';
-            
-            // Show modal
-            const modal = document.getElementById('deployUpdateModal');
-            modal.style.display = 'flex';
-            setTimeout(() => {
-                modal.style.opacity = '1';
-            }, 10);
-        }
-        
-        // Function to confirm deployment
-        function confirmDeployment() {
-            // Hide initial content
-            document.getElementById('deployUpdateContent').style.display = 'none';
-            document.getElementById('deployConfirm').style.display = 'none';
-            document.getElementById('deployCancel').textContent = 'Close';
-            
-            // Show progress
-            document.getElementById('deployProgressContainer').style.display = 'block';
-            
-            // Get deployment data
-            const software = document.getElementById('deploySoftware').textContent;
-            const schedule = document.getElementById('deploySchedule').value;
-            
-            // Simulate deployment progress
-            let progress = 0;
-            const interval = setInterval(() => {
-                progress += Math.random() * 15;
-                if (progress > 100) progress = 100;
-                
-                document.getElementById('deployProgressBar').style.width = `${progress}%`;
-                
-                if (progress < 30) {
-                    document.getElementById('deployStatusText').textContent = 'Preparing deployment...';
-                    document.getElementById('deployDetailText').textContent = 'Validating update package and target devices';
-                } else if (progress < 60) {
-                    document.getElementById('deployStatusText').textContent = 'Configuring deployment...';
-                    document.getElementById('deployDetailText').textContent = 'Setting up deployment schedule and options';
-                } else if (progress < 90) {
-                    document.getElementById('deployStatusText').textContent = 'Finalizing deployment...';
-                    document.getElementById('deployDetailText').textContent = 'Creating deployment tasks and notifications';
-                } else if (progress === 100) {
-                    document.getElementById('deployStatusText').textContent = 'Deployment scheduled!';
-                    document.getElementById('deployDetailText').textContent = 'All tasks have been created successfully';
-                    
-                    clearInterval(interval);
-                    
-                    // Show success after a brief delay
-                    setTimeout(() => {
-                        document.getElementById('deployProgressContainer').style.display = 'none';
-                        document.getElementById('deploySuccessContainer').style.display = 'block';
-                        
-                        // Set success message based on schedule
-                        let scheduleText = '';
-                        switch(schedule) {
-                            case 'immediate':
-                                scheduleText = 'immediately';
-                                break;
-                            case 'night':
-                                scheduleText = 'tonight at 2:00 AM';
-                                break;
-                            case 'weekend':
-                                scheduleText = 'this weekend (Saturday at 2:00 AM)';
-                                break;
-                            case 'custom':
-                                scheduleText = 'according to your custom schedule';
-                                break;
-                        }
-                        
-                        document.getElementById('deploySuccessMessage').textContent = `The update for ${software} will be deployed ${scheduleText}.`;
-                    }, 500);
-                }
-            }, 200);
-        }
-        
-        // Function to close deployment modal
-        function closeDeployModal() {
-            const modal = document.getElementById('deployUpdateModal');
-            modal.style.opacity = '0';
-            setTimeout(() => {
-                modal.style.display = 'none';
-            }, 300);
-        }
     </script>
     <script src="ai-chat-widget.js"></script>
 
@@ -4982,89 +4905,6 @@
             <div class="modal-buttons">
                 <button class="modal-button cancel-button" onclick="closeNotifyTeamModal()">Cancel</button>
                 <button class="modal-button confirm-button" id="sendNotificationButton" onclick="sendTeamNotification()">Send Notification</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Deploy Update Modal -->
-    <div class="admin-key-modal" id="deployUpdateModal" style="display: none; opacity: 0;">
-        <div class="modal-content" style="max-width: 500px; margin: 0; transform: translateY(0);">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h3 class="modal-title" id="deployUpdateTitle">Deploy Update</h3>
-                <button onclick="closeDeployModal()" style="background: none; border: none; font-size: 20px; color: #f5f5f7; cursor: pointer;">×</button>
-            </div>
-            
-            <div id="deployUpdateContent">
-                <div style="margin-bottom: 20px;">
-                    <div style="font-size: 15px; color: #f5f5f7; margin-bottom: 8px;">You are about to deploy the following update:</div>
-                    <div style="background: #2c2c2e; border-radius: 8px; padding: 16px;">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                            <span style="color: #86868b;">Software:</span>
-                            <span style="color: #f5f5f7; font-weight: 500;" id="deploySoftware"></span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                            <span style="color: #86868b;">Version:</span>
-                            <span style="color: #f5f5f7; font-weight: 500;" id="deployVersion"></span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                            <span style="color: #86868b;">Affected Devices:</span>
-                            <span style="color: #f5f5f7; font-weight: 500;" id="deployDevices"></span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between;">
-                            <span style="color: #86868b;">Update Type:</span>
-                            <span style="color: #f5f5f7; font-weight: 500;" id="deployType"></span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div style="margin-bottom: 20px;">
-                    <label style="display: block; font-size: 14px; color: #86868b; margin-bottom: 8px;">Deployment Schedule</label>
-                    <select id="deploySchedule" style="width: 100%; padding: 12px; border-radius: 8px; border: none; background: #3a3a3c; color: #f5f5f7;">
-                        <option value="immediate">Deploy Immediately</option>
-                        <option value="night" selected>Tonight (2:00 AM)</option>
-                        <option value="weekend">Weekend (Saturday 2:00 AM)</option>
-                        <option value="custom">Custom Schedule</option>
-                    </select>
-                </div>
-                
-                <div style="margin-bottom: 20px;">
-                    <label style="display: block; font-size: 14px; color: #86868b; margin-bottom: 8px;">Deployment Options</label>
-                    <div style="background: #2c2c2e; border-radius: 8px; padding: 16px;">
-                        <div style="display: flex; align-items: center; margin-bottom: 12px;">
-                            <input type="checkbox" id="notifyUsers" checked style="margin-right: 8px;">
-                            <label for="notifyUsers" style="color: #f5f5f7; font-size: 14px;">Notify users before deployment</label>
-                        </div>
-                        <div style="display: flex; align-items: center; margin-bottom: 12px;">
-                            <input type="checkbox" id="forceRestart" style="margin-right: 8px;">
-                            <label for="forceRestart" style="color: #f5f5f7; font-size: 14px;">Force restart if required</label>
-                        </div>
-                        <div style="display: flex; align-items: center;">
-                            <input type="checkbox" id="rollbackOnFailure" checked style="margin-right: 8px;">
-                            <label for="rollbackOnFailure" style="color: #f5f5f7; font-size: 14px;">Automatic rollback on failure</label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div id="deployProgressContainer" style="display: none; margin-bottom: 20px;">
-                <div style="font-size: 16px; color: #f5f5f7; margin-bottom: 12px; text-align: center;" id="deployStatusText">Preparing deployment...</div>
-                <div style="height: 8px; background: #3a3a3c; border-radius: 4px; overflow: hidden; margin-bottom: 16px;">
-                    <div id="deployProgressBar" style="height: 100%; width: 0%; background: linear-gradient(to right, #2d7aff, #2260d2); transition: width 0.3s ease;"></div>
-                </div>
-                <div style="font-size: 14px; color: #86868b; text-align: center;" id="deployDetailText"></div>
-            </div>
-            
-            <div id="deploySuccessContainer" style="display: none; margin-bottom: 20px; text-align: center;">
-                <div style="width: 60px; height: 60px; background: rgba(48, 209, 88, 0.1); border-radius: 50%; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center;">
-                    <span style="color: #30d158; font-size: 30px;">✓</span>
-                </div>
-                <div style="font-size: 18px; color: #f5f5f7; margin-bottom: 8px;">Deployment Scheduled Successfully</div>
-                <div style="font-size: 14px; color: #86868b;" id="deploySuccessMessage"></div>
-            </div>
-            
-            <div class="modal-buttons" style="display: flex; justify-content: flex-end; gap: 12px;">
-                <button onclick="closeDeployModal()" class="action-button" id="deployCancel">Cancel</button>
-                <button onclick="confirmDeployment()" class="action-button primary" id="deployConfirm">Deploy Update</button>
             </div>
         </div>
     </div>
