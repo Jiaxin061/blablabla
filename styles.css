@@ -1,0 +1,233 @@
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+    color: #f5f5f7;
+    line-height: 1.5;
+}
+
+/* Uniform scrollbar styling */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background-color: #1d1d1f;
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #3a3a3c;
+    border-radius: 3px;
+    transition: background-color 0.3s;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #848484;
+}
+
+/* Header Styles */
+header {
+    background-color: rgba(29, 29, 31, 0.8);
+    backdrop-filter: blur(20px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1);
+    padding: 16px 0;
+}
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+}
+
+.logo img {
+    height: 48px;
+    width: auto;
+    margin-right: 16px;
+}
+
+nav ul {
+    display: flex;
+    list-style: none;
+}
+
+nav ul li {
+    margin-left: 24px;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: #f5f5f7;
+    font-size: 14px;
+    transition: color 0.2s;
+}
+
+nav ul li a:hover {
+    color: #2d7aff;
+}
+
+/* Active navigation link style */
+nav ul li a.active {
+    color: #2d7aff;
+    font-weight: 600;
+    position: relative;
+}
+
+nav ul li a.active::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: #2d7aff;
+    border-radius: 1px;
+}
+
+.logout-btn {
+    background: rgba(255, 69, 58, 0.1);
+    color: #dfdfdf;
+    padding: 4px 16px 7px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    border: 1px solid rgba(255, 69, 58, 0.2);
+    margin-left: 24px;
+    cursor: pointer;
+}
+
+.logout-btn:hover {
+    background: rgba(255, 69, 58, 0.2);
+    color: #ff453a;
+}
+
+/* Main Content */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 24px;
+}
+
+.section-title {
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 24px;
+    color: #f5f5f7;
+}
+
+/* Common Card Styles */
+.card {
+    background: #1d1d1f;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Common Button Styles */
+.btn,
+.button,
+.primary-button,
+.mode-action,
+.issue-action,
+.scan-btn,
+.export-button {
+    display: inline-block;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    text-decoration: none;
+    margin-top: 8px;
+}
+
+.btn-primary,
+.primary-button,
+.mode-action,
+.issue-action,
+.scan-btn {
+    background: #2d7aff;
+    color: white;
+}
+
+.btn-primary:hover,
+.primary-button:hover,
+.mode-action:hover,
+.issue-action:hover,
+.scan-btn:hover,
+.export-button:hover {
+    background: #2260d2;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.btn-secondary,
+.export-button {
+    background: #2c2c2e;
+    color: #f5f5f7;
+}
+
+.btn-secondary:hover {
+    background: #3a3a3c;
+}
+
+/* Special button states */
+.mode-action.current {
+    background: rgba(48, 209, 88, 0.2);
+    color: #30d158;
+    border: 2px solid rgba(48, 209, 88, 0.3);
+}
+
+/* Full width button option */
+.btn-block,
+button[type="button"].primary-button,
+#loginBtn,
+#registerBtn {
+    display: block;
+    width: 100%;
+}
+
+/* Button with icon */
+.btn-icon,
+.scan-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .header-container {
+        padding: 0 16px;
+    }
+
+    .container {
+        padding: 24px 16px;
+    }
+
+    nav ul li {
+        margin-left: 16px;
+    }
+} 
