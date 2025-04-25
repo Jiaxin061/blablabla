@@ -1,0 +1,2991 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DblaFence - Reports</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.css">
+    <link rel="stylesheet" href="ai-chat-widget.css">
+    <style>
+        /* Reports Page Specific Styles */
+        .reports-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        /* Time Range Filter */
+        .time-filter {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            background: #1d1d1f;
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .time-option {
+            background: #2c2c2e;
+            color: #f5f5f7;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .time-option:hover {
+            background: #3a3a3c;
+        }
+
+        .time-option.active {
+            background: #2d7aff;
+        }
+
+        .custom-range {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .date-input {
+            background: #2c2c2e;
+            border: 1px solid #3a3a3c;
+            color: #f5f5f7;
+            padding: 8px;
+            border-radius: 6px;
+        }
+
+        /* Performance Reports */
+        .performance-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .performance-card {
+            background: #1d1d1f;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .performance-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .performance-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: #f5f5f7;
+        }
+
+        .performance-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: #f5f5f7;
+            margin-bottom: 8px;
+        }
+
+        .performance-trend {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .trend-up {
+            color: #30d158;
+        }
+
+        .trend-down {
+            color: #ff453a;
+        }
+
+        /* Charts Section */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .chart-card {
+            background: #1d1d1f;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .chart-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: #f5f5f7;
+        }
+
+        .chart-container {
+            height: 300px;
+            position: relative;
+        }
+
+        /* Issues Summary */
+        .issues-summary {
+            background: #1d1d1f;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .issues-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .issue-type {
+            background: #2c2c2e;
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .issue-count {
+            font-size: 24px;
+            font-weight: 600;
+            color: #f5f5f7;
+            margin-bottom: 4px;
+        }
+
+        .issue-label {
+            font-size: 14px;
+            color: #86868b;
+        }
+
+        /* AI Insights */
+        .ai-insights {
+            background: #1d1d1f;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .insight-item {
+            margin-bottom: 12px;
+            border-radius: 10px;
+            background: rgba(44, 44, 46, 0.5);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .insight-item:hover {
+            background: rgba(58, 58, 60, 0.7);
+            transform: translateX(0);
+        }
+        
+        .insight-content {
+            flex: 1;
+        }
+        
+        .insight-action {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 8px;
+        }
+        
+        .insight-action .scan-btn {
+            padding: 8px 12px;
+            font-size: 13px;
+            background: rgba(45, 122, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .insight-action .scan-btn:hover {
+            background: #2d7aff;
+        }
+
+        .insight-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .insight-warning {
+            background: rgba(255, 204, 0, 0.2);
+            color: #ffd60a;
+        }
+
+        .insight-critical {
+            background: rgba(255, 69, 58, 0.2);
+            color: #ff453a;
+        }
+
+        .insight-info {
+            background: rgba(45, 122, 255, 0.2);
+            color: #2d7aff;
+        }
+
+        .insight-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: #f5f5f7;
+            margin-bottom: 4px;
+        }
+
+        .insight-description {
+            font-size: 13px;
+            color: #86868b;
+        }
+
+        /* Export Options */
+        .export-section {
+            background: #1d1d1f;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .export-header {
+            margin-bottom: 16px;
+        }
+
+        .export-description {
+            font-size: 14px;
+            color: #86868b;
+            margin-top: 8px;
+        }
+
+        .export-options {
+            display: flex;
+            gap: 16px;
+            padding-top: 12px;
+        }
+
+        .export-button {
+            background: #2c2c2e;
+            color: #f5f5f7;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 15px;
+            font-weight: 500;
+            min-width: 140px;
+            opacity: 1;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .export-button:hover {
+            background: #2260d2;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .export-button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .export-button::before {
+            content: '';
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        .export-button[onclick*="pdf"]::before {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23f5f5f7'%3E%3Cpath d='M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8.5 7.5c0 .83-.67 1.5-1.5 1.5H9v2H7.5V7H10c.83 0 1.5.67 1.5 1.5v1zm5 2c0 .83-.67 1.5-1.5 1.5h-2.5V7H15c.83 0 1.5.67 1.5 1.5v3zm4-3H19v1h1.5V11H19v2h-1.5V7h3v1.5zM9 9.5h1v-1H9v1zM4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm10 5.5h1v-3h-1v3z'/%3E%3C/svg%3E");
+        }
+
+        .export-button[onclick*="excel"]::before {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23f5f5f7'%3E%3Cpath d='M19 3H5C3.9 3 3 3.9 3 5v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-1.8 16H6.8c-.4 0-.8-.4-.8-.8V5.8c0-.4.4-.8.8-.8h10.4c.4 0 .8.4.8.8v12.4c0 .4-.4.8-.8.8zM11 16l3-3h-2V9h-2v4H8l3 3z'/%3E%3C/svg%3E");
+        }
+
+        .export-button[onclick*="csv"]::before {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23f5f5f7'%3E%3Cpath d='M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z'/%3E%3C/svg%3E");
+        }
+
+        .export-status {
+            margin-top: 16px;
+            padding: 16px;
+            background: #2c2c2e;
+            border-radius: 8px;
+        }
+
+        .progress-container {
+            height: 6px;
+            background: #3a3a3c;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0;
+            background: #2d7aff;
+            transition: width 0.3s ease;
+        }
+
+        .status-text {
+            font-size: 14px;
+            color: #f5f5f7;
+            text-align: center;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .performance-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .issues-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .performance-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .issues-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .time-filter {
+                flex-wrap: wrap;
+            }
+        }
+
+        /* Restricted Link Style */
+        .restricted-link {
+            position: relative;
+            color: #f5f5f7;
+            opacity: 0.8;
+            transition: all 0.2s ease;
+        }
+
+        .restricted-link:hover {
+            opacity: 1;
+        }
+
+        .lock-icon {
+            font-size: 10px;
+            margin-left: 4px;
+            opacity: 0.7;
+        }
+        /* Add animation styles */
+        .performance-card, .chart-card, .issues-summary, .ai-insights, .export-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease, box-shadow 0.3s ease;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            }
+            50% {
+                box-shadow: 0 8px 30px rgba(45, 122, 255, 0.3);
+            }
+            100% {
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            }
+        }
+
+        .export-button {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .export-button:after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.3);
+            opacity: 0;
+            border-radius: 100%;
+            transform: scale(1, 1) translate(-50%, -50%);
+            transform-origin: 50% 50%;
+        }
+
+        .export-button:focus:not(:active)::after {
+            animation: ripple 1s ease-out;
+        }
+
+        @keyframes ripple {
+            0% {
+                transform: scale(0, 0);
+                opacity: 0.5;
+            }
+            20% {
+                transform: scale(25, 25);
+                opacity: 0.3;
+            }
+            100% {
+                opacity: 0;
+                transform: scale(40, 40);
+            }
+        }
+
+        .insight-item {
+            transition: all 0.3s ease;
+        }
+
+        .insight-item:hover {
+            transform: translateX(5px);
+            background: #3a3a3c;
+        }
+
+        /* Enhanced Issue Type Cards */
+        .issue-type {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .issue-type:hover {
+            transform: translateY(-5px);
+            background: #3a3a3c;
+        }
+
+        .issue-count {
+            position: relative;
+            display: inline-block;
+        }
+
+        .issue-count:after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 20px;
+            height: 2px;
+            background: #2d7aff;
+            border-radius: 2px;
+        }
+
+        .section-title {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .section-title:after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -6px;
+            width: 40px;
+            height: 3px;
+            background: #2d7aff;
+            border-radius: 3px;
+        }
+
+        /* Reduce gap between title and content */
+        main.container > h2.section-title {
+            margin-bottom: 16px;
+        }
+
+        /* Make headings uniform across pages */
+        .page-heading {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: #f5f5f7;
+        }
+
+        /* Security and Antivirus Section Styles */
+        .security-section {
+            background: #1d1d1f;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .security-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .scan-btn {
+            background: #2260d2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .scan-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .scan-btn:active {
+            transform: translateY(0);
+        }
+        
+        .scan-btn-icon {
+            display: inline-block;
+            width: 21px;
+            height: 21px;
+            background-image: url("images/scan-svgrepo-com.svg");
+            background-size: contain;
+            background-repeat: no-repeat;
+            filter: invert(1);
+        }
+        
+        .security-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+        
+        .security-card {
+            background: #2c2c2e;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+                flex-direction: column;
+            }
+        
+        .security-score-container {
+            position: relative;
+            height: 240px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .score-gauge {
+            position: relative;
+            height: 180px;
+            width: 180px;
+        }
+        
+        .gauge-value {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 36px;
+            font-weight: 700;
+            color: #f5f5f7;
+        }
+        
+        .gauge-label {
+            margin-top: 16px;
+            font-size: 14px;
+            color: #86868b;
+            text-align: center;
+        }
+        
+        .score-breakdown {
+            margin-top: 20px;
+        }
+        
+        .score-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .score-name {
+            color: #86868b;
+        }
+        
+        .score-value {
+            color: #f5f5f7;
+            font-weight: 500;
+        }
+        
+        .score-value.good {
+            color: #30d158;
+        }
+        
+        .score-value.warning {
+            color: #ffd60a;
+        }
+        
+        .score-value.critical {
+            color: #ff453a;
+        }
+        
+        .threats-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 240px;
+            overflow-y: auto;
+        }
+        
+        .threat-item {
+            display: flex;
+            background: #3a3a3c;
+            border-radius: 8px;
+            padding: 12px;
+            gap: 12px;
+            transition: all 0.2s;
+        }
+        
+        .threat-item:hover {
+            background: #444446;
+        }
+        
+        .threat-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(255, 69, 58, 0.1);
+            color: #ff453a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .threat-icon.blocked {
+            background: rgba(48, 209, 88, 0.1);
+            color: #30d158;
+        }
+        
+        .threat-details {
+            flex: 1;
+        }
+        
+        .threat-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #f5f5f7;
+            margin-bottom: 4px;
+        }
+        
+        .threat-info {
+            font-size: 12px;
+            color: #86868b;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .threat-time {
+            color: #86868b;
+        }
+        
+        .scan-container {
+            display: none;
+            margin-top: 16px;
+            background: #2c2c2e;
+            border-radius: 12px;
+            padding: 20px;
+        }
+        
+        .scan-container.active {
+            display: block;
+        }
+        
+        .scan-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .scan-progress {
+            height: 8px;
+            background: #3a3a3c;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 16px;
+            position: relative;
+        }
+        
+        .scan-progress::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.1), transparent);
+            background-size: 200% 100%;
+            animation: scanShine 2s linear infinite;
+        }
+        
+        @keyframes scanShine {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
+        
+        .scan-progress-bar {
+            height: 100%;
+            width: 0;
+            background: linear-gradient(to right, #2d7aff, #2260d2);
+            transition: width 0.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .scan-status {
+            font-size: 14px;
+            color: #86868b;
+            margin-bottom: 16px;
+        }
+        
+        .scan-results {
+            display: none;
+            background: #3a3a3c;
+            border-radius: 8px;
+            padding: 16px;
+        }
+        
+        .scan-results.visible {
+            display: block;
+        }
+        
+        .scan-result-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        .cancel-scan-btn {
+            background: #3a3a3c;
+            color: #f5f5f7;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .scan-complete-actions {
+            display: none;
+            margin-top: 16px;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+        
+        .scan-complete-actions.visible {
+            display: flex;
+        }
+        
+        /* Responsive fixes */
+        @media (max-width: 768px) {
+            .security-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Enhanced Layout Styles */
+        .dashboard-section {
+            margin-bottom: 32px;
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        .dashboard-section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .dashboard-section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #f5f5f7;
+            margin: 0;
+            position: relative;
+            padding-left: 12px;
+        }
+        
+        
+        
+        .dashboard-grid {
+            display: grid;
+            gap: 24px;
+        }
+        
+        .two-columns {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .three-columns {
+            grid-template-columns: repeat(3, 1fr);
+        }
+        
+        .card {
+            background: #1d1d1f;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+            border-color: rgba(45, 122, 255, 0.2);
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(to right, #2d7aff, #2260d2);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .card:hover::before {
+            opacity: 1;
+        }
+        
+        .card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 30%;
+            height: 100%;
+            background: linear-gradient(to left, rgba(45, 122, 255, 0.02), transparent);
+            pointer-events: none;
+        }
+        
+        .card-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: rgba(45, 122, 255, 0.1);
+            color: #2d7aff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            margin-bottom: 16px;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #f5f5f7;
+            margin: 0;
+        }
+        
+        .card-body {
+            flex: 1;
+        }
+        
+        .card-footer {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        /* Enhanced Status Indicators */
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 6px;
+            display: inline-block;
+        }
+        
+        .status-good {
+            background: #30d158;
+            box-shadow: 0 0 10px rgba(48, 209, 88, 0.5);
+        }
+        
+        .status-warning {
+            background: #ffd60a;
+            box-shadow: 0 0 10px rgba(255, 214, 10, 0.5);
+        }
+        
+        .status-critical {
+            background: #ff453a;
+            box-shadow: 0 0 10px rgba(255, 69, 58, 0.5);
+        }
+        
+        /* Enhanced Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes pulseGlow {
+            0% {
+                box-shadow: 0 0 5px rgba(45, 122, 255, 0.5);
+            }
+            50% {
+                box-shadow: 0 0 15px rgba(45, 122, 255, 0.8);
+            }
+            100% {
+                box-shadow: 0 0 5px rgba(45, 122, 255, 0.5);
+            }
+        }
+        
+        /* Enhanced Time Filter */
+        .time-filter {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 30px;
+            background: linear-gradient(to right, #1d1d1f, #2c2c2e);
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .time-filter::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 150px;
+            height: 100%;
+            background: linear-gradient(to right, rgba(45, 122, 255, 0), rgba(45, 122, 255, 0.05));
+            pointer-events: none;
+        }
+        
+        .time-option {
+            background: #2c2c2e;
+            color: #f5f5f7;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        
+        .time-option:hover {
+            background: #3a3a3c;
+            transform: translateY(-2px);
+        }
+        
+        .time-option.active {
+            background: #2d7aff;
+            box-shadow: 0 4px 10px rgba(45, 122, 255, 0.3);
+        }
+        
+        /* Enhanced Export Section */
+        .export-section {
+            background: linear-gradient(to right, #1d1d1f, #2c2c2e);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            opacity: 1;
+            transform: translateY(0);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .export-section::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 200px;
+            height: 100%;
+            background: linear-gradient(to right, rgba(45, 122, 255, 0), rgba(45, 122, 255, 0.05));
+            pointer-events: none;
+        }
+
+        /* Additional Card Enhancements */
+        .card {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(to right, #2d7aff, #2260d2);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .card:hover::before {
+            opacity: 1;
+        }
+        
+        .card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 30%;
+            height: 100%;
+            background: linear-gradient(to left, rgba(45, 122, 255, 0.02), transparent);
+            pointer-events: none;
+        }
+        
+        .card-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: rgba(45, 122, 255, 0.1);
+            color: #2d7aff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            margin-bottom: 16px;
+        }
+        
+        /* Improved Scan Progress Bar */
+        .scan-progress {
+            height: 8px;
+            background: #3a3a3c;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 16px;
+            position: relative;
+        }
+        
+        .scan-progress::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.1), transparent);
+            background-size: 200% 100%;
+            animation: scanShine 2s linear infinite;
+        }
+        
+        @keyframes scanShine {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
+        
+        .scan-progress-bar {
+            height: 100%;
+            width: 0;
+            background: linear-gradient(to right, #2d7aff, #2260d2);
+            transition: width 0.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Better Threat Items */
+        .threat-item {
+            border-left: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .threat-item:hover {
+            border-left-color: #2d7aff;
+            padding-left: 15px;
+        }
+        
+        /* Enhanced Time Filter Options */
+        .custom-range {
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            padding-left: 12px;
+        }
+        
+        .date-input {
+            background: rgba(44, 44, 46, 0.8);
+            border: 1px solid rgba(58, 58, 60, 0.8);
+            color: #f5f5f7;
+            padding: 10px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .date-input:hover, .date-input:focus {
+            border-color: rgba(45, 122, 255, 0.5);
+            box-shadow: 0 0 0 2px rgba(45, 122, 255, 0.1);
+            outline: none;
+        }
+        
+        /* Responsive Adjustments */
+        @media (max-width: 992px) {
+            .three-columns {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .three-columns, .two-columns {
+                grid-template-columns: 1fr;
+            }
+            
+            .dashboard-section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+        }
+
+        /* Remove scrollbar styling from here as it should be in styles.css */
+        
+        /* Enhanced Issues Summary */
+        .issues-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 0;
+        }
+        
+        .issue-type {
+            background: rgba(44, 44, 46, 0.7);
+            border-radius: 10px;
+            padding: 16px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .issue-type:hover {
+            background: rgba(58, 58, 60, 0.7);
+            transform: translateY(-3px);
+        }
+        
+        .issue-type::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(to right, #2d7aff, transparent);
+        }
+        
+        .issue-count {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            background: linear-gradient(to bottom, #f5f5f7, rgba(245, 245, 247, 0.7));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .issue-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: rgba(245, 245, 247, 0.8);
+        }
+        
+        /* Combined Performance Metrics */
+        .performance-combined {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .metric-item {
+            position: relative;
+            padding-left: 12px;
+            border-left: 3px solid transparent;
+        }
+        
+        .metric-item.good {
+            border-color: #30d158;
+        }
+        
+        .metric-item.warning {
+            border-color: #ffd60a;
+        }
+        
+        .metric-item.critical {
+            border-color: #ff453a;
+        }
+        
+        .metric-title {
+            font-size: 14px;
+            color: rgba(245, 245, 247, 0.7);
+            margin-bottom: 4px;
+        }
+        
+        .metric-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: #f5f5f7;
+            margin-bottom: 4px;
+        }
+        
+        .metric-trend {
+            font-size: 12px;
+            color: #86868b;
+        }
+        
+        /* Enhanced AI Insights */
+        .insights-container {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .insight-item {
+            margin-bottom: 8px;
+            border-radius: 10px;
+            background: rgba(44, 44, 46, 0.5);
+        }
+        
+        .insight-item:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Fix for insight items layout */
+        .insight-item-content {
+            display: flex;
+            height: 20px;
+            gap: 12px;
+            align-items: flex-start;
+        }
+        
+        .insight-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        /* New System Health Dashboard Styles */
+        .overall-health-score {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .overall-health-score .score-circle {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        .overall-health-score .score-value {
+            position: absolute;
+            font-size: 28px;
+            font-weight: 700;
+            color: #f5f5f7;
+        }
+
+        .overall-health-score .score-label {
+            font-size: 14px;
+            color: #86868b;
+            text-align: center;
+        }
+
+        .circular-chart {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+
+        .circle-bg {
+            fill: none;
+            stroke: #2c2c2e;
+            stroke-width: 3;
+        }
+
+        .circle {
+            fill: none;
+            stroke: #2d7aff;
+            stroke-width: 3;
+            stroke-linecap: round;
+            filter: drop-shadow(0 0 6px rgba(45, 122, 255, 0.5));
+        }
+
+        .health-metrics-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .health-metric {
+            background: rgba(44, 44, 46, 0.5);
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: all 0.2s;
+        }
+
+        .health-metric:hover {
+            background: rgba(58, 58, 60, 0.7);
+            transform: translateY(-2px);
+        }
+
+        .health-metric-label {
+            font-size: 14px;
+            color: #86868b;
+            margin-bottom: 8px;
+        }
+
+        .health-metric-gauge {
+            width: 100%;
+            height: 6px;
+            background: #3a3a3c;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .health-metric-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #f5f5f7;
+        }
+
+        .gauge-fill {
+            height: 100%;
+            background: linear-gradient(to right, #30d158, #2d7aff);
+            border-radius: 3px;
+        }
+
+        .gauge-fill.warning {
+            background: linear-gradient(to right, #ffd60a, #ff9f0a);
+        }
+
+        .gauge-fill.critical {
+            background: linear-gradient(to right, #ff453a, #ff375f);
+        }
+
+        .gauge-fill.normal {
+            background: linear-gradient(to right, #2d7aff, #5e5ce6);
+        }
+
+        .health-issues-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .health-metrics-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Fix for Security Score styles - ensure they're not affected by Health dashboard styles */
+        .security-score-container {
+            position: relative;
+            height: 240px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .security-score-container .score-gauge {
+            position: relative;
+            height: 180px;
+            width: 180px;
+        }
+        
+        .security-score-container .gauge-value {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 36px;
+            font-weight: 700;
+            color: #f5f5f7;
+        }
+        
+        .security-score-container .gauge-label {
+            margin-top: 16px;
+            font-size: 14px;
+            color: #86868b;
+            text-align: center;
+        }
+
+        /* Issues Summary Container */
+        .issues-summary-container {
+            background: rgba(44, 44, 46, 0.5);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 24px;
+        }
+
+        .issues-summary-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: #f5f5f7;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .issues-chart-container {
+            position: relative;
+            height: 180px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .total-issues {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 1;
+        }
+
+        .total-number {
+            display: block;
+            font-size: 32px;
+            font-weight: 700;
+            color: #f5f5f7;
+            line-height: 1;
+        }
+
+        .total-label {
+            display: block;
+            font-size: 14px;
+            color: #86868b;
+        }
+
+        .issues-legend {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            font-size: 14px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            background: rgba(44, 44, 46, 0.5);
+        }
+
+        .legend-item:hover {
+            transform: translateY(-2px);
+            background: rgba(58, 58, 60, 0.7);
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .legend-label {
+            flex: 1;
+            color: #f5f5f7;
+        }
+
+        .legend-value {
+            font-weight: 600;
+            color: #f5f5f7;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 2px 8px;
+            min-width: 24px;
+            text-align: center;
+        }
+
+        .legend-item.hardware .legend-dot {
+            background: #ff375f;
+            box-shadow: 0 0 8px rgba(255, 55, 95, 0.5);
+        }
+
+        .legend-item.software .legend-dot {
+            background: #5e5ce6;
+            box-shadow: 0 0 8px rgba(94, 92, 230, 0.5);
+        }
+
+        .legend-item.overheating .legend-dot {
+            background: #ff9f0a;
+            box-shadow: 0 0 8px rgba(255, 159, 10, 0.5);
+        }
+
+        .legend-item.performance .legend-dot {
+            background: #30d158;
+            box-shadow: 0 0 8px rgba(48, 209, 88, 0.5);
+        }
+
+        /* Issue Details Styling */
+        .issues-details {
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        
+        .issues-details h4 {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0 0 16px 0;
+            color: #f5f5f7;
+        }
+        
+        .issue-category {
+            margin-bottom: 24px;
+        }
+        
+        .issue-category h5 {
+            font-size: 16px;
+            font-weight: 500;
+            margin: 0 0 12px 0;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .issue-category h5.hardware {
+            color: #ff9f0a;
+        }
+        
+        .issue-category h5.software {
+            color: #5e5ce6;
+        }
+        
+        .issue-category h5.overheating {
+            color: #ff453a;
+        }
+        
+        .issue-category h5.performance {
+            color: #32d74b;
+        }
+        
+        .issue-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .issue-item {
+            display: flex;
+            background: rgba(30, 30, 32, 0.5);
+            border-radius: 10px;
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            transition: all 0.2s ease;
+        }
+        
+        .issue-item:hover {
+            background: rgba(30, 30, 32, 0.8);
+            transform: translateX(5px);
+        }
+        
+        .issue-severity {
+            min-width: 60px;
+            margin-right: 12px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            text-align: center;
+            align-self: flex-start;
+        }
+        
+        .issue-severity.critical {
+            background: #ff453a;
+            color: #ffffff;
+        }
+        
+        .issue-severity.high {
+            background: #ff9f0a;
+            color: #ffffff;
+        }
+        
+        .issue-severity.medium {
+            background: #ffd60a;
+            color: #1d1d1f;
+        }
+        
+        .issue-severity.low {
+            background: #32d74b;
+            color: #ffffff;
+        }
+        
+        .issue-content {
+            flex: 1;
+        }
+        
+        .issue-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #f5f5f7;
+        }
+        
+        .issue-description {
+            font-size: 14px;
+            color: #a1a1a6;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+        
+        .issue-time {
+            font-size: 12px;
+            color: #6e6e73;
+        }
+        
+        /* Collapsible issues details */
+        .issues-details.collapsed {
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            padding-top: 0;
+            margin-top: 0;
+            transform: translateY(-10px);
+            transition: max-height 0.5s ease, opacity 0.3s ease, transform 0.4s ease, margin-top 0.3s ease, padding-top 0.3s ease;
+        }
+        
+        .issues-details {
+            max-height: 500px;
+            opacity: 1;
+            transform: translateY(0);
+            transition: max-height 0.5s ease, opacity 0.3s ease, transform 0.4s ease, margin-top 0.3s ease, padding-top 0.3s ease;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #5f5f5f rgba(45, 122, 255, 0.1);
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        
+        .issues-details::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .issues-details::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+        }
+        
+        .issues-details::-webkit-scrollbar-thumb {
+            background-color: #2d7aff;
+            border-radius: 4px;
+        }
+        
+        .issues-details::-webkit-scrollbar-thumb:hover {
+            background-color: #1d62d3;
+        }
+        
+        .toggle-issues-btn {
+            background: #3a7bff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .toggle-issues-btn:hover {
+            background: #2260d2;
+            transform: translateY(-2px);
+        }
+        
+        /* Make button more visually appealing */
+        #toggleIssuesBtn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 100px;
+            box-shadow: 0 2px 10px rgba(58, 123, 255, 0.3);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        /* Responsive adjustments for issues */
+        @media (max-width: 768px) {
+            .issue-item {
+                flex-direction: column;
+            }
+            
+            .issue-severity {
+                margin-bottom: 8px;
+                align-self: flex-start;
+            }
+        }
+        
+        .card-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: rgba(45, 122, 255, 0.1);
+            color: #2d7aff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            margin-bottom: 16px;
+        }
+
+        /* Unified scrollbar styles for all scrollable areas */
+        .issues-details,
+        .threats-list,
+        .insights-container {
+            max-height: 400px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #5f5f5f rgba(30, 30, 32, 0.5);
+        }
+        
+        /* Specific height for threats list to ensure scrolling */
+        .threats-list {
+            height: 320px;
+            margin-right: 4px;
+        }
+        
+        .issues-details::-webkit-scrollbar,
+        .threats-list::-webkit-scrollbar,
+        .insights-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .issues-details::-webkit-scrollbar-track,
+        .threats-list::-webkit-scrollbar-track,
+        .insights-container::-webkit-scrollbar-track {
+            background: rgba(30, 30, 32, 0.5);
+            border-radius: 4px;
+        }
+        
+        .issues-details::-webkit-scrollbar-thumb,
+        .threats-list::-webkit-scrollbar-thumb,
+        .insights-container::-webkit-scrollbar-thumb {
+            background-color: #5f5f5f;
+            border-radius: 4px;
+        }
+        
+        .issues-details::-webkit-scrollbar-thumb:hover,
+        .threats-list::-webkit-scrollbar-thumb:hover,
+        .insights-container::-webkit-scrollbar-thumb:hover {
+            background-color: #757575;
+        }
+        
+        /* Specific adjustments for issues-details */
+        .issues-details.collapsed {
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: all 0.5s ease;
+            margin-top: 0;
+            padding-top: 0;
+        }
+        
+        .issues-details {
+            opacity: 1;
+            transition: all 0.5s ease;
+        }
+
+        /* Navigation Active State */
+        nav ul li a.active {
+            color: #3a7bff;
+            font-weight: 600;
+            position: relative;
+        }
+        
+        nav ul li a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: #3a7bff;
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <img src="images/DblaFence_logo.png" alt="DblaFence Logo">
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="personal-dashboard.html">Dashboard</a></li>
+                    <li><a href="personal-reports.html">Reports</a></li>
+                    <li><a href="personal-settings.html">Settings</a></li>
+                    <li><a href="personal-support.html">Support</a></li>
+                    <li><a href="#" class="logout-btn" onclick="handleLogout()">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <h2 class="page-heading">My System Report</h2>
+        
+        <!-- Export Options Moved Up -->
+        <div class="export-section">
+            <div class="dashboard-section-header">
+                <h3 class="dashboard-section-title">Export Report</h3>
+            </div>
+            <p class="export-description">Generate and download your system report in various formats</p>
+            <div class="export-options">
+                <button class="export-button" onclick="startExport('pdf')">
+                    <span>Export PDF</span>
+                </button>
+                <button class="export-button" onclick="startExport('excel')">
+                    <span>Export Excel</span>
+                </button>
+                <button class="export-button" onclick="startExport('csv')">
+                    <span>Export CSV</span>
+                </button>
+            </div>
+            <div id="exportStatus" class="export-status" style="display: none;">
+                <div class="progress-container">
+                    <div class="progress-bar" id="exportProgress"></div>
+                </div>
+                <p class="status-text" id="exportStatusText">Preparing your report...</p>
+            </div>
+        </div>
+        
+        <!-- Time Range Filter -->
+        <div class="time-filter">
+            <button class="time-option active">Today</button>
+            <button class="time-option">Last 7 Days</button>
+            <button class="time-option">Last 30 Days</button>
+            <div class="custom-range">
+                <input type="date" class="date-input">
+                <span>to</span>
+                <input type="date" class="date-input">
+            </div>
+        </div>
+
+        <!-- Combined Performance and Issues Section -->
+        <div class="dashboard-section">
+            <div class="dashboard-section-header">
+                <h3 class="dashboard-section-title">System Performance and Issues</h3>
+                </div>
+            <div class="dashboard-grid two-columns">
+
+        <!-- Performance Metrics -->
+            <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Performance Metrics</h3>
+                </div>
+
+                    <div class="card-body">
+                        <div class="performance-combined">
+                            <div class="metric-item good">
+                                <div class="metric-title">CPU Usage</div>
+                                <div class="metric-value">32%</div>
+                                <div class="metric-trend trend-down">↓ 3% from yesterday</div>
+            </div>
+                            <div class="metric-item warning">
+                                <div class="metric-title">Memory</div>
+                                <div class="metric-value">65%</div>
+                                <div class="metric-trend">↑ 8% from last period</div>
+                </div>
+                            <div class="metric-item good">
+                                <div class="metric-title">Uptime</div>
+                                <div class="metric-value">99.9%</div>
+                                <div class="metric-trend">Stable</div>
+            </div>
+                </div>
+
+                    <div class="chart-container">
+                        <canvas id="cpuChart"></canvas>
+                    </div>
+            </div>
+        </div>
+
+                <!-- System Issues Overview -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Issues Overview</h3>
+                        <button class="toggle-issues-btn" onclick="toggleIssuesDetails()" id="toggleIssuesBtn">
+                            Show Details
+                        </button>
+                </div>
+                    <div class="issues-summary-container">
+                        <div class="issues-chart-container">
+                            <canvas id="issuesDonutChart"></canvas>
+                            <div class="total-issues">
+                                <span class="total-number">10</span>
+                                <span class="total-label">Issues</span>
+                </div>
+            </div>
+                        <div class="issues-legend">
+                            <div class="legend-item hardware">
+                                <span class="legend-dot"></span>
+                                <span class="legend-label">Hardware</span>
+                                <span class="legend-value">4</span>
+                </div>
+                            <div class="legend-item software">
+                                <span class="legend-dot"></span>
+                                <span class="legend-label">Software</span>
+                                <span class="legend-value">2</span>
+                </div>
+                            <div class="legend-item overheating">
+                                <span class="legend-dot"></span>
+                                <span class="legend-label">Overheating</span>
+                                <span class="legend-value">1</span>
+                            </div>
+                            <div class="legend-item performance">
+                                <span class="legend-dot"></span>
+                                <span class="legend-label">Performance</span>
+                                <span class="legend-value">3</span>
+            </div>
+        </div>
+
+                        <!-- Detailed issues list (collapsible) -->
+                        <div class="issues-details collapsed" id="issuesDetails">
+                            <h4>Issue Details</h4>
+                            
+                            <div class="issue-category">
+                                <h5 class="hardware">Hardware Issues (4)</h5>
+                                <div class="issue-list">
+                                    <div class="issue-item">
+                                        <div class="issue-severity high">High</div>
+                                        <div class="issue-content">
+                                            <div class="issue-title">Disk Drive Failure</div>
+                                            <div class="issue-description">Secondary HDD showing S.M.A.R.T. warnings - potential failure imminent</div>
+                                            <div class="issue-time">Detected: 2 days ago</div>
+            </div>
+                </div>
+                                    <div class="issue-item">
+                                        <div class="issue-severity medium">Medium</div>
+                                        <div class="issue-content">
+                                            <div class="issue-title">RAM Module Errors</div>
+                                            <div class="issue-description">Memory errors detected in DIMM slot 2 - consider replacement</div>
+                                            <div class="issue-time">Detected: 5 days ago</div>
+                </div>
+                </div>
+                                    <div class="issue-item">
+                                        <div class="issue-severity low">Low</div>
+                                        <div class="issue-content">
+                                            <div class="issue-title">USB Port Malfunction</div>
+                                            <div class="issue-description">Front USB 3.0 port intermittently disconnecting devices</div>
+                                            <div class="issue-time">Detected: 1 week ago</div>
+                                        </div>
+                                    </div>
+                                    <div class="issue-item">
+                                        <div class="issue-severity low">Low</div>
+                                        <div class="issue-content">
+                                            <div class="issue-title">Battery Capacity Reduced</div>
+                                            <div class="issue-description">Laptop battery at 67% of original capacity</div>
+                                            <div class="issue-time">Detected: 2 weeks ago</div>
+                                        </div>
+                </div>
+            </div>
+        </div>
+        
+                            <div class="issue-category">
+                                <h5 class="software">Software Issues (2)</h5>
+                                <div class="issue-list">
+                                    <div class="issue-item">
+                                        <div class="issue-severity high">High</div>
+                                        <div class="issue-content">
+                                            <div class="issue-title">Driver Conflict</div>
+                                            <div class="issue-description">Graphics driver conflict causing application crashes with design software</div>
+                                            <div class="issue-time">Detected: Yesterday</div>
+                </div>
+                                    </div>
+                                    <div class="issue-item">
+                                        <div class="issue-severity medium">Medium</div>
+                                        <div class="issue-content">
+                                            <div class="issue-title">Outdated Software</div>
+                                            <div class="issue-description">Adobe Creative Suite requires critical security update</div>
+                                            <div class="issue-time">Detected: 3 days ago</div>
+                                        </div>
+                                    </div>
+                </div>
+            </div>
+
+                            <div class="issue-category">
+                                <h5 class="overheating">Overheating Issues (1)</h5>
+                                <div class="issue-list">
+                                    <div class="issue-item">
+                                        <div class="issue-severity critical">Critical</div>
+                                        <div class="issue-content">
+                                            <div class="issue-title">CPU Thermal Throttling</div>
+                                            <div class="issue-description">CPU reaching 92°C during intensive tasks, causing performance loss</div>
+                                            <div class="issue-time">Detected: Today</div>
+                </div>
+                </div>
+            </div>
+        </div>
+
+                            <div class="issue-category">
+                                <h5 class="performance">Performance Issues (3)</h5>
+                                <div class="issue-list">
+                                    <div class="issue-item">
+                                        <div class="issue-severity high">High</div>
+                                        <div class="issue-content">
+                                            <div class="issue-title">Excessive Memory Usage</div>
+                                            <div class="issue-description">Chrome browser consuming over 4GB of RAM with multiple tabs</div>
+                                            <div class="issue-time">Detected: Today</div>
+                </div>
+                </div>
+                                    <div class="issue-item">
+                                        <div class="issue-severity medium">Medium</div>
+                                        <div class="issue-content">
+                                            <div class="issue-title">Startup Delay</div>
+                                            <div class="issue-description">System taking 45+ seconds to boot due to excessive startup items</div>
+                                            <div class="issue-time">Detected: 4 days ago</div>
+                </div>
+                                    </div>
+                                    <div class="issue-item">
+                                        <div class="issue-severity low">Low</div>
+                                        <div class="issue-content">
+                                            <div class="issue-title">Disk Fragmentation</div>
+                                            <div class="issue-description">Main drive fragmentation at 15%, impacting file access speed</div>
+                                            <div class="issue-time">Detected: 1 week ago</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Insights & Recommendations -->
+        <div class="dashboard-section">
+            <div class="dashboard-section-header">
+                <h3 class="dashboard-section-title">AI Insights & Recommendations</h3>
+            </div>
+            <div class="dashboard-grid">
+                <div class="card">
+                    <div class="insights-container">
+            <div class="insight-item">
+                            <div class="insight-item-content">
+                <div class="insight-icon insight-warning">!</div>
+                <div class="insight-content">
+                                    <div class="insight-title">Your Top Issue</div>
+                                    <div class="insight-description">Memory usage spikes consistently occur between 2-4 PM while using design applications</div>
+                                </div>
+                            </div>
+                            <div class="insight-action">
+                                <button class="scan-btn" onclick="optimizeMemory()">
+                                    Optimize Memory
+                </button>
+            </div>
+            </div>
+            <div class="insight-item">
+                            <div class="insight-item-content">
+                <div class="insight-icon insight-critical">!</div>
+                <div class="insight-content">
+                                    <div class="insight-title">Personal Alert</div>
+                                    <div class="insight-description">Your device is at risk of overheating based on current usage patterns</div>
+                                </div>
+                            </div>
+                            <div class="insight-action">
+                                <button class="scan-btn" onclick="manageHeat()">
+                                    Manage Heat
+                                </button>
+                </div>
+            </div>
+            <div class="insight-item">
+                            <div class="insight-item-content">
+                <div class="insight-icon insight-info">i</div>
+                <div class="insight-content">
+                    <div class="insight-title">Recommended Action</div>
+                                    <div class="insight-description">Schedule system maintenance during off-peak hours to improve performance</div>
+                                </div>
+                            </div>
+                            <div class="insight-action">
+                                <button class="scan-btn" onclick="scheduleMaintenance()">
+                                    Schedule
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Security and Antivirus Section -->
+        <div class="dashboard-section">
+            <div class="dashboard-section-header">
+                <h3 class="dashboard-section-title">Security and Antivirus</h3>
+                <button class="scan-btn" onclick="startScan()">
+                    <span class="scan-btn-icon"></span>
+                    <span>Start System Scan</span>
+            </button>
+            </div>
+            <div class="dashboard-grid two-columns">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">System Security Score</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="security-score-container">
+                            <div class="score-gauge" id="securityGauge">
+                                <canvas id="securityGaugeChart"></canvas>
+                                <div class="gauge-value">85</div>
+                            </div>
+                            <div class="gauge-label">Your system is well-protected</div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="score-breakdown">
+                            <div class="score-item">
+                                <span class="score-name">Antivirus Protection</span>
+                                <span class="score-value good">Active</span>
+                            </div>
+                            <div class="score-item">
+                                <span class="score-name">Firewall Status</span>
+                                <span class="score-value good">Enabled</span>
+                            </div>
+                            <div class="score-item">
+                                <span class="score-name">System Updates</span>
+                                <span class="score-value warning">2 pending</span>
+                            </div>
+                            <div class="score-item">
+                                <span class="score-name">Last Full Scan</span>
+                                <span class="score-value">2 days ago</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Recent Security Events</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="threats-list">
+                            <div class="threat-item">
+                                <div class="threat-icon blocked">✓</div>
+                                <div class="threat-details">
+                                    <div class="threat-name">Malicious File Blocked</div>
+                                    <div class="threat-info">
+                                        <span>invoice_scan_2023.exe</span>
+                                        <span class="threat-time">Today, 10:45 AM</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="threat-item">
+                                <div class="threat-icon blocked">✓</div>
+                                <div class="threat-details">
+                                    <div class="threat-name">Phishing Attempt Blocked</div>
+                                    <div class="threat-info">
+                                        <span>mail.securityupdate-verify.com</span>
+                                        <span class="threat-time">Yesterday, 3:20 PM</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="threat-item">
+                                <div class="threat-icon">!</div>
+                                <div class="threat-details">
+                                    <div class="threat-name">Suspicious Network Connection</div>
+                                    <div class="threat-info">
+                                        <span>Unknown IP: 185.213.xx.xx</span>
+                                        <span class="threat-time">Yesterday, 11:32 AM</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="threat-item">
+                                <div class="threat-icon blocked">✓</div>
+                                <div class="threat-details">
+                                    <div class="threat-name">Trojan Horse Blocked</div>
+                                    <div class="threat-info">
+                                        <span>system32.dll.exe</span>
+                                        <span class="threat-time">3 days ago</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="threat-item">
+                                <div class="threat-icon blocked">✓</div>
+                                <div class="threat-details">
+                                    <div class="threat-name">Suspicious Browser Extension</div>
+                                    <div class="threat-info">
+                                        <span>Data Collector v2.1</span>
+                                        <span class="threat-time">3 days ago</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Scan Container -->
+            <div id="scanContainer" class="scan-container">
+                <div class="scan-header">
+                    <h4 class="chart-title">System Scan in Progress</h4>
+                    <button class="cancel-scan-btn" onclick="cancelScan()">Cancel</button>
+                </div>
+                <div class="scan-progress">
+                    <div id="scanProgressBar" class="scan-progress-bar"></div>
+                </div>
+                <div id="scanStatus" class="scan-status">
+                    Initializing scan...
+                </div>
+                <div id="scanResults" class="scan-results">
+                    <div class="scan-result-item">
+                        <span>Files Scanned</span>
+                        <span id="filesScanResult">0</span>
+                    </div>
+                    <div class="scan-result-item">
+                        <span>Threats Detected</span>
+                        <span id="threatsResult">0</span>
+                    </div>
+                    <div class="scan-result-item">
+                        <span>Threats Resolved</span>
+                        <span id="resolvedResult">0</span>
+                    </div>
+                </div>
+                <div id="scanCompleteActions" class="scan-complete-actions">
+                    <button class="scan-btn" onclick="showScanDetails()">
+                        View Detailed Report
+            </button>
+                    <button class="scan-btn" onclick="closeScan()">
+                        Close
+            </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+    <script src="ai-chat-widget.js"></script>
+    <script>
+        // Initialize charts when page loads
+        window.addEventListener('DOMContentLoaded', function() {
+            highlightCurrentPage();
+            renderCPUChart();
+            renderIssuesDonutChart();
+            renderSecurityGauge();
+            initToggleIssuesDetails();
+            initTimeFilter();
+        });
+        
+        // Time Filter Functionality
+        function initTimeFilter() {
+            document.querySelectorAll('.time-option').forEach(button => {
+                button.addEventListener('click', function() {
+                    document.querySelectorAll('.time-option').forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Simulate refreshing data when time range changes
+                    refreshCharts();
+                });
+            });
+        }
+        
+        // Refresh charts when data changes
+        function refreshCharts() {
+            // Add animation to show data refreshing
+            document.querySelectorAll('.chart-container').forEach(container => {
+                container.style.opacity = 0.5;
+                setTimeout(() => {
+                    container.style.opacity = 1;
+                }, 300);
+            });
+            
+            // Re-render charts with slightly different data
+            renderCPUChart();
+            renderIssuesDonutChart();
+            renderSecurityGauge();
+        }
+        
+        // Export Functionality
+        function startExport(format) {
+            const exportStatus = document.getElementById('exportStatus');
+            const progressBar = document.getElementById('exportProgress');
+            const statusText = document.getElementById('exportStatusText');
+            
+            // Show export status
+            exportStatus.style.display = 'block';
+            progressBar.style.width = '0%';
+            
+            // Set initial status text
+            statusText.textContent = `Preparing your ${format.toUpperCase()} report...`;
+            
+            // Simulate export progress
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress > 100) progress = 100;
+                
+                progressBar.style.width = `${progress}%`;
+                
+                if (progress < 30) {
+                    statusText.textContent = `Collecting system data...`;
+                } else if (progress < 60) {
+                    statusText.textContent = `Processing report in ${format.toUpperCase()} format...`;
+                } else if (progress < 90) {
+                    statusText.textContent = `Finalizing your ${format.toUpperCase()} report...`;
+                } else if (progress === 100) {
+                    statusText.textContent = `Your ${format.toUpperCase()} report is ready!`;
+                    clearInterval(interval);
+                    
+                    // Simulate download after completion
+                    setTimeout(() => {
+                        simulateDownload(format);
+                        // Hide progress bar after download
+                        setTimeout(() => {
+                            exportStatus.style.display = 'none';
+                        }, 1500);
+                    }, 1000);
+                }
+            }, 300);
+        }
+        
+        function simulateDownload(format) {
+            // Create a fake download link
+            const link = document.createElement('a');
+            link.href = '#';
+            
+            // Set filename based on format
+            const date = new Date().toISOString().slice(0, 10);
+            link.download = `system_report_${date}.${format}`;
+            
+            // Append to body, click, and remove
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Show success message
+            alert(`Your ${format.toUpperCase()} report has been downloaded.`);
+        }
+        
+        // System Scan Functionality
+        let scanInterval;
+        let scanInProgress = false;
+        
+        function startScan() {
+            if (scanInProgress) return;
+            
+            scanInProgress = true;
+            const scanContainer = document.getElementById('scanContainer');
+            const scanProgressBar = document.getElementById('scanProgressBar');
+            const scanStatus = document.getElementById('scanStatus');
+            const scanResults = document.getElementById('scanResults');
+            const scanCompleteActions = document.getElementById('scanCompleteActions');
+            
+            // Reset and show scan container
+            scanContainer.classList.add('active');
+            scanStatus.textContent = 'Initializing scan...';
+            scanProgressBar.style.width = '0%';
+            scanResults.classList.remove('visible');
+            scanCompleteActions.classList.remove('visible');
+            
+            // Scroll to the scan container to show progress
+            setTimeout(() => {
+                scanContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 300);
+            
+            // Initialize scan counters
+            let progress = 0;
+            let filesScanned = 0;
+            let threatsDetected = 0;
+            let threatsResolved = 0;
+            
+            // Simulate scanning process
+            scanInterval = setInterval(() => {
+                progress += Math.random() * 5;
+                if (progress > 100) progress = 100;
+                
+                scanProgressBar.style.width = `${progress}%`;
+                
+                // Update scan status based on progress
+                if (progress < 20) {
+                    scanStatus.textContent = 'Scanning system files...';
+                    filesScanned = Math.floor(progress * 250);
+                } else if (progress < 50) {
+                    scanStatus.textContent = 'Scanning installed applications...';
+                    filesScanned = Math.floor(progress * 500);
+                } else if (progress < 80) {
+                    scanStatus.textContent = 'Scanning documents and downloads...';
+                    filesScanned = Math.floor(progress * 650);
+                } else {
+                    scanStatus.textContent = 'Finalizing scan and checking results...';
+                    filesScanned = Math.floor(progress * 700);
+                }
+                
+                // Randomly detect threats
+                if (Math.random() > 0.95 && progress > 30 && threatsDetected < 3) {
+                    threatsDetected++;
+                    threatsResolved = threatsDetected;
+                }
+                
+                // Update result counters
+                document.getElementById('filesScanResult').textContent = filesScanned.toLocaleString();
+                document.getElementById('threatsResult').textContent = threatsDetected;
+                document.getElementById('resolvedResult').textContent = threatsResolved;
+                
+                // Show results as they come in
+                if (progress > 20) {
+                    scanResults.classList.add('visible');
+                }
+                
+                // Complete the scan
+                if (progress === 100) {
+                    clearInterval(scanInterval);
+                    scanInProgress = false;
+                    scanStatus.textContent = 'Scan completed successfully';
+                    scanCompleteActions.classList.add('visible');
+                    
+                    // Refresh security score after scan
+                    renderSecurityGauge();
+                }
+            }, 200);
+        }
+        
+        function cancelScan() {
+            if (!scanInProgress) return;
+            
+            clearInterval(scanInterval);
+            scanInProgress = false;
+            
+            const scanContainer = document.getElementById('scanContainer');
+            scanContainer.classList.remove('active');
+        }
+        
+        function closeScan() {
+            const scanContainer = document.getElementById('scanContainer');
+            scanContainer.classList.remove('active');
+        }
+        
+        function showScanDetails() {
+            // In a real app, this would show a detailed scan report
+            alert('Scan Details: All threats have been successfully mitigated. Your system is secure.');
+        }
+        
+        // Toggle Issues Details 
+        function toggleIssuesDetails() {
+            const issuesDetails = document.getElementById('issuesDetails');
+            const toggleBtn = document.getElementById('toggleIssuesBtn');
+            
+            if (issuesDetails) {
+                // Toggle the collapsed class
+                issuesDetails.classList.toggle('collapsed');
+                
+                // Update button text
+                if (toggleBtn) {
+                    toggleBtn.textContent = issuesDetails.classList.contains('collapsed') ? 'Show Details' : 'Hide Details';
+                }
+                
+                // If we're showing details, scroll to them
+                if (!issuesDetails.classList.contains('collapsed')) {
+                    // Small delay to allow for CSS transition
+                    setTimeout(() => {
+                        issuesDetails.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 100);
+                }
+            }
+        }
+        
+        // Initialize the toggle issues details functionality
+        function initToggleIssuesDetails() {
+            const toggleBtn = document.getElementById('toggleIssuesBtn');
+            const issuesDetails = document.getElementById('issuesDetails');
+            
+            if (toggleBtn && issuesDetails) {
+                // Make sure details are collapsed initially
+                issuesDetails.classList.add('collapsed');
+                toggleBtn.textContent = 'Show Details';
+            }
+        }
+        
+        // Highlight the current page in navigation
+        function highlightCurrentPage() {
+            const currentPath = window.location.pathname;
+            const navLinks = document.querySelectorAll('nav ul li a:not(.logout-btn)');
+            
+            // Get the filename from the path
+            const currentFile = currentPath.split('/').pop();
+            console.log('Current file:', currentFile);
+            
+            navLinks.forEach(link => {
+                const linkPath = link.getAttribute('href');
+                
+                // Check if the current file matches the link href
+                if (currentFile === linkPath || 
+                    (currentFile === '' && linkPath === 'personal-dashboard.html')) {
+                    link.classList.add('active');
+                }
+            });
+        }
+        
+        // CPU Usage Chart
+        function renderCPUChart() {
+            const cpuCtx = document.getElementById('cpuChart');
+            
+            if (!cpuCtx) {
+                console.error('CPU Chart canvas element not found');
+                return;
+            }
+            
+            const ctx = cpuCtx.getContext('2d');
+            
+            // Clear existing chart if it exists
+            if (window.cpuChartInstance) {
+                window.cpuChartInstance.destroy();
+            }
+            
+            // Generate slightly random data
+            const data = [
+                25 + Math.random() * 10,
+                30 + Math.random() * 10,
+                45 + Math.random() * 10,
+                40 + Math.random() * 10,
+                35 + Math.random() * 10,
+                30 + Math.random() * 10
+            ];
+            
+            window.cpuChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
+                    datasets: [{
+                        label: 'CPU Usage',
+                        data: data,
+                        borderColor: '#2d7aff',
+                        tension: 0.4,
+                        fill: true,
+                        backgroundColor: 'rgba(45, 122, 255, 0.1)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: {
+                        duration: 1000
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Issues Donut Chart
+        function renderIssuesDonutChart() {
+            const issuesDonutCtx = document.getElementById('issuesDonutChart');
+            
+            if (!issuesDonutCtx) {
+                console.error('Issues Donut Chart canvas element not found');
+                return;
+            }
+            
+            const ctx = issuesDonutCtx.getContext('2d');
+            
+            // Clear existing chart if it exists
+            if (window.issuesDonutChartInstance) {
+                window.issuesDonutChartInstance.destroy();
+            }
+            
+            // Chart data
+            const data = {
+                labels: ['Hardware', 'Software', 'Overheating', 'Performance'],
+                    datasets: [{
+                    data: [4, 2, 1, 3],
+                    backgroundColor: [
+                        '#ff375f', // hardware - red
+                        '#5e5ce6', // software - purple
+                        '#ff9f0a', // overheating - orange
+                        '#30d158'  // performance - green
+                    ],
+                    borderWidth: 0,
+                    hoverOffset: 5
+                }]
+            };
+            
+            // Chart options
+            const options = {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                cutout: '70%',
+                    plugins: {
+                        legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        enabled: true,
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.raw || 0;
+                                return `${label}: ${value} issue${value !== 1 ? 's' : ''}`;
+                            }
+                        }
+                    }
+                },
+                animation: {
+                    animateScale: true,
+                    animateRotate: true,
+                    duration: 1000
+                }
+            };
+            
+            // Create chart
+            window.issuesDonutChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: data,
+                options: options
+            });
+        }
+        
+        // Security Gauge Chart
+        function renderSecurityGauge() {
+            const securityGaugeCtx = document.getElementById('securityGaugeChart');
+            
+            if (!securityGaugeCtx) {
+                console.error('Security Gauge Chart canvas element not found');
+                return;
+            }
+            
+            const ctx = securityGaugeCtx.getContext('2d');
+            
+            // Clear existing chart if it exists
+            if (window.securityGaugeInstance) {
+                window.securityGaugeInstance.destroy();
+            }
+            
+            // Create gradient
+            const gradientSegment = ctx.createLinearGradient(0, 0, 0, 200);
+            gradientSegment.addColorStop(0, '#30d158');
+            gradientSegment.addColorStop(0.5, '#ffd60a');
+            gradientSegment.addColorStop(1, '#ff453a');
+            
+            window.securityGaugeInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    datasets: [{
+                        data: [85, 15],
+                        backgroundColor: [
+                            '#2d7aff',
+                            'rgba(255, 255, 255, 0.05)'
+                        ],
+                        borderWidth: 0,
+                        circumference: 180,
+                        rotation: 270
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '50%',
+                    animation: {
+                        duration: 1500
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            enabled: false
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Handle logout
+        function handleLogout() {
+            localStorage.clear();
+            sessionStorage.clear();
+            window.location.href = 'index.html';
+        }
+        
+        // Check if user should be on this page
+        function checkAccountType() {
+            const accountType = localStorage.getItem('accountType');
+            
+            // If company account, redirect to company dashboard
+            if (accountType === 'company') {
+                window.location.href = 'company-reports.html';
+            }
+        }
+        
+        // Check account type on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            checkAccountType();
+        });
+        
+        // AI Recommendation Action Functions
+        function optimizeMemory() {
+            showActionModal('Memory Optimization', 'Running memory optimization...', 
+                ['Analyzing memory usage patterns', 'Identifying memory-intensive applications', 'Applying optimization techniques', 'Clearing unnecessary cached data'],
+                'Memory optimization complete. 1.2GB of memory has been freed up.');
+        }
+        
+        function manageHeat() {
+            showActionModal('Heat Management', 'Managing system temperature...', 
+                ['Analyzing thermal patterns', 'Adjusting fan controls', 'Optimizing process scheduling', 'Reducing background tasks'],
+                'Heat management complete. System temperature reduced by 8°C.');
+        }
+        
+        function scheduleMaintenance() {
+            // Show a simple scheduling dialog
+            const timeOptions = ['Tonight at 2:00 AM', 'Tomorrow at 3:00 AM', 'Saturday at 2:00 AM', 'Custom time...'];
+            let optionsHTML = '';
+            
+            timeOptions.forEach(option => {
+                optionsHTML += `<button class="scan-btn" style="margin: 8px;">${option}</button>`;
+            });
+            
+            showActionModal('Schedule Maintenance', 'Select a time for system maintenance:', 
+                [], '', optionsHTML);
+        }
+        
+        // Action Modal System
+        function showActionModal(title, message, steps, completionMessage, customContent = '') {
+            // Create modal if it doesn't exist
+            let modal = document.getElementById('actionModal');
+            
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'actionModal';
+                modal.className = 'admin-key-modal';
+                modal.style.display = 'none';
+                modal.style.position = 'fixed';
+                modal.style.zIndex = '1000';
+                modal.style.left = '0';
+                modal.style.top = '0';
+                modal.style.width = '100%';
+                modal.style.height = '100%';
+                modal.style.overflow = 'auto';
+                modal.style.backgroundColor = 'rgba(0,0,0,0.7)';
+                modal.style.opacity = '0';
+                modal.style.transition = 'opacity 0.3s ease';
+                
+                const modalHTML = `
+                    <div class="modal-content" style="background-color: #1d1d1f; margin: 15% auto; padding: 20px; border-radius: 12px; width: 60%; max-width: 600px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);">
+                        <h3 class="modal-title" id="actionModalTitle" style="color: #f5f5f7; margin-top: 0;"></h3>
+                        <p class="modal-description" id="actionModalMessage" style="color: #a1a1a6;"></p>
+                        <div id="actionModalSteps"></div>
+                        <div id="actionModalCustomContent"></div>
+                        <div class="scan-progress" id="actionModalProgress" style="height: 8px; background: #3a3a3c; border-radius: 4px; overflow: hidden; margin: 16px 0;">
+                            <div id="actionModalProgressBar" class="scan-progress-bar" style="height: 100%; width: 0; background: #2d7aff; transition: width 0.3s ease;"></div>
+                        </div>
+                        <div class="modal-buttons" style="text-align: right; margin-top: 16px;">
+                            <button class="modal-button cancel-button" onclick="closeActionModal()" style="background: #3a3a3c; color: #f5f5f7; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer;">Close</button>
+                        </div>
+                    </div>
+                `;
+                
+                modal.innerHTML = modalHTML;
+                document.body.appendChild(modal);
+            }
+            
+            // Set modal content
+            document.getElementById('actionModalTitle').textContent = title;
+            document.getElementById('actionModalMessage').textContent = message;
+            
+            const stepsContainer = document.getElementById('actionModalSteps');
+            stepsContainer.innerHTML = '';
+            
+            if (steps.length > 0) {
+                const stepsList = document.createElement('ul');
+                stepsList.style.padding = '0';
+                stepsList.style.margin = '16px 0';
+                stepsList.style.listStyle = 'none';
+                
+                steps.forEach(step => {
+                    const stepItem = document.createElement('li');
+                    stepItem.style.padding = '8px 0';
+                    stepItem.style.opacity = '0.5';
+                    stepItem.style.color = '#f5f5f7';
+                    stepItem.innerHTML = `<span style="margin-right: 8px;">⚪</span> ${step}`;
+                    stepsList.appendChild(stepItem);
+                });
+                
+                stepsContainer.appendChild(stepsList);
+            }
+            
+            const customContentContainer = document.getElementById('actionModalCustomContent');
+            customContentContainer.innerHTML = customContent;
+            
+            // Show modal
+            modal.style.display = 'block';
+            setTimeout(() => {
+                modal.style.opacity = '1';
+            }, 10);
+            
+            // If there are steps, simulate progress
+            if (steps.length > 0) {
+                simulateActionProgress(steps, completionMessage);
+            }
+        }
+        
+        function simulateActionProgress(steps, completionMessage) {
+            const progressBar = document.getElementById('actionModalProgressBar');
+            const stepItems = document.querySelectorAll('#actionModalSteps li');
+            const message = document.getElementById('actionModalMessage');
+            
+            progressBar.style.width = '0%';
+            let currentStep = 0;
+            const stepDuration = 1500; // ms per step
+            
+            const progressInterval = setInterval(() => {
+                if (currentStep < steps.length) {
+                    // Update progress bar
+                    const progress = (currentStep + 1) / steps.length * 100;
+                    progressBar.style.width = `${progress}%`;
+                    
+                    // Update step indicator
+                    stepItems[currentStep].style.opacity = '1';
+                    stepItems[currentStep].innerHTML = `<span style="margin-right: 8px; color: #30d158;">✓</span> ${steps[currentStep]}`;
+                    
+                    currentStep++;
+                } else {
+                    // Complete
+                    clearInterval(progressInterval);
+                    progressBar.style.width = '100%';
+                    
+                    // Update message
+                    message.textContent = completionMessage;
+                    
+                    // Add animation to progress bar
+                    progressBar.style.background = 'linear-gradient(to right, #30d158, #2d7aff)';
+                }
+            }, stepDuration);
+        }
+        
+        function closeActionModal() {
+            const modal = document.getElementById('actionModal');
+            if (modal) {
+                modal.style.opacity = '0';
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                }, 300);
+            }
+        }
+    </script>
+</body>
+</html> 
